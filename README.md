@@ -5,5 +5,5 @@ The directory is structured as follows: <br />
 ├── classes &emsp;&emsp;            # main classes  <br />
 ├── examples &emsp;                 # minimal examples <br />
 ├── results  &emsp;&emsp;&nbsp;     # more complex use cases for generating results in the paper <br />
-├── input    &emsp;&ensp;&nbsp;&ensp; # input files needed for examples and results <br />
+├── input    &emsp;&ensp;&emsp;     # input files needed for examples and results <br />
 └── README.md <br />
