@@ -4,6 +4,6 @@ A minimal code to simulate interference pattern data acquisition and relative ph
 The directory is structured as follows: <br />
 ├── classes &emsp;&emsp;                  # main classes  <br />
 ├── examples &emsp;                 # minimal examples <br />
-├── results  &emsp;&ensp;                # more complex use cases for generating results in the paper <br />
-├── input    &emsp;&ensp;                # input files needed for examples and results <br />
+├── results  &emsp;&emsp;                # more complex use cases for generating results in the paper <br />
+├── input    &emsp;&ensp;&nbsp;               # input files needed for examples and results <br />
 └── README.md <br />
