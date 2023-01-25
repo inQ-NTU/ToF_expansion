@@ -8,5 +8,5 @@ The directory is structured as follows: <br />
 ├── input    &emsp;&ensp;&emsp;&nbsp;     # input files needed for examples and results <br />
 └── README.md <br />
 
-The structure of the classes is shown in a diagram below <br/>
+The structure of the classes is shown in a diagram below. The red vertical lines represent inheritance and the blue lines represent simulation workflow.  <br/>
 ![class_structure](classes/class_structure.png)
