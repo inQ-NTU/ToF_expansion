@@ -7,3 +7,6 @@ The directory is structured as follows: <br />
 ├── results  &emsp;&emsp;&nbsp;     # more complex use cases for generating results in the paper <br />
 ├── input    &emsp;&ensp;&emsp;&nbsp;     # input files needed for examples and results <br />
 └── README.md <br />
+
+The structure of the classes is shown in a diagram below <br/>
+![class_structure](classes/class_structure.png)
