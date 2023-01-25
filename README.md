@@ -10,3 +10,6 @@ The directory is structured as follows: <br />
 
 The structure of the classes is shown in a diagram below. The red vertical lines represent inheritance and the blue lines represent simulation workflow.  <br/>
 ![class_structure](classes/class_structure.png)
+
+## References
+[1] van Nieuwkerk, Y. D., Schmiedmayer, J., & Essler, F. (2018). Projective phase measurements in one-dimensional Bose gases. SciPost Physics, 5(5), 046.
