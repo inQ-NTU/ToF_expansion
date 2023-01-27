@@ -20,8 +20,8 @@ classdef class_physical_parameters < handle
         default_expansion_time = 15.6e-3;
         
         %default convolution scale
-        default_1d_conv_scale = 0.002;
-        default_2d_conv_scale = 0.02; 
+        default_1d_conv_scale = 0.003;
+        default_2d_conv_scale = 0.03; 
         
     end
     
