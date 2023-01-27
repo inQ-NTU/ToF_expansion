@@ -1,4 +1,3 @@
-clear all 
 addpath('../input')
 addpath('../classes')
 
@@ -7,16 +6,15 @@ t1 = 7e-3; %small tof
 t2 = 15.6e-3; %medium tof
 buffer_length = 5e-6; %buffer length for longitudinal expansion: 5 microns
 
-
 interference_suite_RS_t1 = class_interference_pattern(phase_profile_RS, t1, buffer_length);
 interference_suite_R_t1 = class_interference_pattern(phase_profile_RS(1,:),t1, buffer_length);
 interference_suite_RS_t2 = class_interference_pattern(phase_profile_RS, t2, buffer_length);
 interference_suite_R_t2 = class_interference_pattern(phase_profile_RS(1,:),t2, buffer_length);
 
 %Generating tof data for t = 7 ms
-rho_local_t1= interference_suite_R_t1.tof_equation_23_transversal_expansion();
-rho_refined_RS_t1=  interference_suite_RS_t1.tof_equation_30_3D_expansion_Riemann_sum();
-rho_refined_R_t1 = interference_suite_R_t1.tof_equation_30_3D_expansion_Riemann_sum();
+rho_local_t1= interference_suite_R_t1.tof_transversal_expansion();
+rho_refined_RS_t1=  interference_suite_RS_t1.tof_full_expansion();
+rho_refined_R_t1 = interference_suite_R_t1.tof_full_expansion();
 
 %normalizing the data
 rho_local_t1 = rho_local_t1./max(rho_local_t1,[],'all');
@@ -28,9 +26,9 @@ nmb_buffer_pixel = interference_suite_R_t1.nmb_buffer_points_z;
 expansion_buffer_t1 = rho_refined_R_t1(1:nmb_buffer_pixel+1,:);
 
 %generating tof data for t = 15.6 ms
-rho_local_t2 = interference_suite_R_t2.tof_equation_23_transversal_expansion();
-rho_refined_RS_t2=  interference_suite_RS_t2.tof_equation_30_3D_expansion_Riemann_sum();
-rho_refined_R_t2 = interference_suite_R_t2.tof_equation_30_3D_expansion_Riemann_sum();
+rho_local_t2 = interference_suite_R_t2.tof_transversal_expansion();
+rho_refined_RS_t2=  interference_suite_RS_t2.tof_full_expansion();
+rho_refined_R_t2 = interference_suite_R_t2.tof_full_expansion();
 
 %normalizing the data
 rho_local_t2 = rho_local_t2./max(rho_local_t2,[],'all');
@@ -43,7 +41,7 @@ expansion_buffer_t2 = rho_refined_R_t2(1:nmb_buffer_pixel+1,:);
 %Plotting
 %Setting up grid & parameters
 
-fontsize = 16;
+fontsize = 20;
 grid_z_input = interference_suite_RS_t1.input_grid_z*1e6;
 grid_z = interference_suite_RS_t1.output_grid_z*1e6;
 grid_x = interference_suite_RS_t1.output_grid_x*1e6;
@@ -59,7 +57,7 @@ xlabel('$z \; (\mu m)$','Interpreter','latex','FontSize',fontsize)
 ylabel('$\varphi_r(z)$','Interpreter','latex','FontSize',fontsize)
 ylim([-1 1])
 yticks([-1, 0, 1])
-yticklabels({'$-\pi$','$0$', '$\pi$'})
+yticklabels({'-\pi','0', '\pi'})
 title('(a)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
 
 f1(2) = subplot(1,3,2);
@@ -76,13 +74,13 @@ xlabel('$x \; (\mu m)$','Interpreter', 'LaTeX','FontSize',fontsize)
 title('(c)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
 yticks([])
 clim([0,1])
-colorbar(f1(3),'Location','EastOutside','TickLabelInterpreter','latex');
-%pos = get(f1(3), 'Position');
-%posnew = pos; posnew(1) = posnew(1) -0.05; set(f1(3), 'Position', posnew)
+cb = colorbar(f1(3),'Location','EastOutside','TickLabelInterpreter','latex');
+set(get(cb,'label'),'string',sprintf('%s', '$\rho_{ToF}$'),'Interpreter','latex','FontSize',22);
+set(cb, 'YTick',[0,0.5,1])
 
 colormap(gge_colormap)
 
-set(f1, 'FontName','Times','FontSize',24)
+set(f1, 'FontName','Times','FontSize',fontsize)
 
 
 %%%%%%Figure 2%%%%%%%%%
@@ -97,14 +95,17 @@ yticks([-5,55,105])
 xticks([])
 clim([0,1])
 
+
 f2(2) = subplot(2,2,2);
 imagesc(grid_x, grid_z, rho_refined_R_t2);
 xticks([])
 yticks([])
 title('(b)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex', 'Position',[-0.2,0.85]);
 clim([0,1])
-colorbar(f2(2),'Location','EastOutside','TickLabelInterpreter','latex', 'Ticks',[0,0.5,1]);
+cb = colorbar(f2(2),'Location','EastOutside','TickLabelInterpreter','latex', 'Ticks',[0,0.5,1]);
 colormap(gge_colormap)
+set(get(cb,'label'),'string',sprintf('%s', '$\rho_{ToF}$'),'Interpreter','latex','FontSize',22);
+set(cb, 'YTick',[0,0.5,1])
 
 f2(3) = subplot(2,2,3);
 imagesc(grid_x, buffer_grid_z, expansion_buffer_t1);
@@ -122,6 +123,7 @@ title('(d)','FontName','Times','Color','black','Units', 'normalized','Interprete
 yticks([])
 clim([0,0.025])
 c = colorbar(f2(4),'Location','EastOutside','TickLabelInterpreter','latex');
+set(get(c,'label'),'string',sprintf('%s', '$\rho_{ToF}$'),'Interpreter','latex','FontSize',22);
 c.Ruler.Exponent = -2;
 
 set(f2, 'FontName','Times','FontSize',fontsize)
@@ -157,15 +159,17 @@ xlabel('$x \; (\mu m)$','Interpreter', 'LaTeX','FontSize',fontsize)
 title('(c)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
 yticks([])
 clim([0,1])
-colorbar(f3(3),'TickLabelInterpreter','latex');
+cb = colorbar(f3(3),'TickLabelInterpreter','latex');
 colormap(gge_colormap)
+set(get(cb,'label'),'string',sprintf('%s', '$\rho_{ToF}$'),'Interpreter','latex','FontSize',22);
+set(cb, 'YTick',[0,0.5,1])
 
-set(f3, 'FontName','Times','FontSize',24)
+set(f3, 'FontName','Times','FontSize',fontsize)
 
-%Saving figure 3
+%Saving figure
 %set(gcf,'Units','inches');
 %screenposition = get(gcf,'Position');
 %set(gcf,...
 %    'PaperPosition',[0 0 screenposition(3:4)],...
 %    'PaperSize',[screenposition(3:4)]);
-%print -dpdf -painters fig3
+%print -dpdf -painters fig1
