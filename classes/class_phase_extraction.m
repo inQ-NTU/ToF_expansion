@@ -15,6 +15,8 @@ classdef class_phase_extraction <  class_physical_parameters & handle
         %output
         phase_result_init
         phase_result_fit
+        normalization_amplitudes
+        contrasts
         all_fit_parameters
         reconstructed_interference_pattern
 
@@ -88,6 +90,8 @@ classdef class_phase_extraction <  class_physical_parameters & handle
             %Define an objective/cost function from the interference class
             % write a loop for slice
             fitted_phase = zeros(1,obj.longitudinal_resolution);
+            amp = zeros(1,obj.longitudinal_resolution);
+            contr = zeros(1,obj.longitudinal_resolution);
             fit_params = cell(1, obj.longitudinal_resolution);
             reconstruced_tof = zeros(obj.longitudinal_resolution, obj.transversal_resolution);
             grid_x = linspace(obj.x_min, obj.x_max, obj.transversal_resolution);
@@ -104,11 +108,15 @@ classdef class_phase_extraction <  class_physical_parameters & handle
                 
                 output = fmincon(tof_basic_cost_func, init_guess,[],[],[],[],search_lower_bound, search_upper_bound,[],options);
                 fitted_phase(i) = output(3);
+                amp(i) = output(1);
+                contr(i) = output(2);
                 reconstruced_tof(i,:) = fitted_interference_slice(output);
                 fit_params{i} = output;
             end
             fitted_phase = obj.clean_phase_jump(fitted_phase);
             obj.phase_result_fit = fitted_phase;
+            obj.normalization_amplitudes = amp;
+            obj.contrasts = contr;
             obj.reconstructed_interference_pattern = reconstruced_tof*max(obj.input_tof_data,[],'all');
             obj.all_fit_parameters = fit_params;
         end
