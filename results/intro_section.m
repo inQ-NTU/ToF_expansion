@@ -1,3 +1,4 @@
+close all
 addpath('../input')
 addpath('../classes')
 
@@ -41,53 +42,59 @@ expansion_buffer_t2 = rho_refined_R_t2(1:nmb_buffer_pixel+1,:);
 %Plotting
 %Setting up grid & parameters
 
-fontsize = 20;
+fontsize = 16;
 grid_z_input = interference_suite_RS_t1.input_grid_z*1e6;
 grid_z = interference_suite_RS_t1.output_grid_z*1e6;
 grid_x = interference_suite_RS_t1.output_grid_x*1e6;
 buffer_grid_z = grid_z(1:nmb_buffer_pixel+1);
-
-%%%%%%Figure 1%%%%%%%%%%%%%%%%%%%%%
-figure
 normalized_phase = phase_profile_RS./pi;
 
-f1(1) = subplot(1,3,1);
-plot(grid_z_input, normalized_phase(1,:),'LineWidth',1.5,'Color','red')
-xlabel('$z \; (\mu m)$','Interpreter','latex','FontSize',fontsize)
-ylabel('$\varphi_r(z)$','Interpreter','latex','FontSize',fontsize)
-ylim([-1 1])
-yticks([-1, 0, 1])
-yticklabels({'-\pi','0', '\pi'})
-title('(a)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
+%%%%%%Figure 1%%%%%%%%%%%%%%%%%%%%%
+img1 = figure;
+f1 = tight_subplot(1,2,[0.1,0.075],[0.2, 0.2],[0.1, 0.1]);
 
-f1(2) = subplot(1,3,2);
+axes(f1(1))
 imagesc(grid_x, grid_z, rho_local_t1)
 xlabel('$x \; (\mu m)$','Interpreter', 'LaTeX','FontSize',fontsize)
-ylabel('$z \; (\mu m)$', 'Interpreter', 'LaTeX','FontSize',fontsize)
-title('(b)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
+ylb = ylabel('$z \; (\mu m)$', 'Interpreter', 'LaTeX','FontSize',fontsize);
+ylb.Position(1) = ylb.Position(1)-5;
+title('(a)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.15,0.85]);
 yticks([-5,55,105])
 clim([0,1])
 
-f1(3) = subplot(1,3,3);
+axes('Position',[.38 .6 .06 .15] );
+box on
+plot(grid_z_input, normalized_phase(1,:),'LineWidth',1.5,'Color','red')
+xlabel('$z \; (\mu m)$','Interpreter','latex')
+ylb = ylabel('$\varphi_r(z)$','Interpreter','latex');
+ylb.Position(1) = ylb.Position(1)+35;
+ylim([-1 1])
+yticks([-1, 0, 1])
+yticklabels({'$-\pi$','$0$', '$\pi$'})
+set(gca, 'YColor','white')
+set(gca,'XColor','white')
+
+axes(f1(2));
 imagesc(grid_x, grid_z, rho_local_t2)
 xlabel('$x \; (\mu m)$','Interpreter', 'LaTeX','FontSize',fontsize)
-title('(c)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
+title('(b)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.1,0.85]);
 yticks([])
 clim([0,1])
-cb = colorbar(f1(3),'Location','EastOutside','TickLabelInterpreter','latex');
-set(get(cb,'label'),'string',sprintf('%s', '$\rho_{ToF}$'),'Interpreter','latex','FontSize',22);
+cb = colorbar(f1(2),'Location','EastOutside','TickLabelInterpreter','latex');
+cb.Position = cb.Position + [0.1,0,0,0];
+set(get(cb,'Title'),'Interpreter','latex')
+set(get(cb,'Title'),'String','$\rho_{ToF}$')
+set(get(cb,'Title'),'FontSize',16)
 set(cb, 'YTick',[0,0.5,1])
 
 colormap(gge_colormap)
-
 set(f1, 'FontName','Times','FontSize',fontsize)
 
-
 %%%%%%Figure 2%%%%%%%%%
-figure
-pbaspect([1 1 1])
+img2 = figure;
+f2 = tight_subplot(2,2,[0.1,0.075],[0.1, 0.1],[0.15, 0.15]);
 %fig2 = tiledlayout(2,2);
-f2(1) = subplot(2,2,1);
+axes(f2(1));
 imagesc(grid_x, grid_z, rho_refined_R_t1);
 ylabel('$z \; (\mu m)$', 'Interpreter', 'LaTeX','FontSize',fontsize)
 title('(a)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
@@ -95,19 +102,21 @@ yticks([-5,55,105])
 xticks([])
 clim([0,1])
 
-
-f2(2) = subplot(2,2,2);
+axes(f2(2));
 imagesc(grid_x, grid_z, rho_refined_R_t2);
 xticks([])
 yticks([])
-title('(b)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex', 'Position',[-0.2,0.85]);
+title('(b)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex', 'Position',[-0.1,0.85]);
 clim([0,1])
 cb = colorbar(f2(2),'Location','EastOutside','TickLabelInterpreter','latex', 'Ticks',[0,0.5,1]);
+set(get(cb,'Title'),'Interpreter','latex')
+set(get(cb,'Title'),'String','$\rho_{ToF}$')
+set(get(cb,'Title'),'FontSize',fontsize+5)
+cb.Position = cb.Position + [0.1,0,0,0];
 colormap(gge_colormap)
-set(get(cb,'label'),'string',sprintf('%s', '$\rho_{ToF}$'),'Interpreter','latex','FontSize',22);
 set(cb, 'YTick',[0,0.5,1])
 
-f2(3) = subplot(2,2,3);
+axes(f2(3))
 imagesc(grid_x, buffer_grid_z, expansion_buffer_t1);
 xlabel('$x \; (\mu m)$','Interpreter', 'LaTeX','FontSize',fontsize)
 ylabel('$z \; (\mu m)$', 'Interpreter', 'LaTeX','FontSize',fontsize)
@@ -115,61 +124,53 @@ title('(c)','FontName','Times','Color','black','Units', 'normalized','Interprete
 yticks([-5,-2.5,0])
 clim([0,0.025])
 
-
-f2(4) = subplot(2,2,4);
+axes(f2(4))
 imagesc(grid_x, buffer_grid_z, expansion_buffer_t2);
 xlabel('$x \; (\mu m)$','Interpreter', 'LaTeX','FontSize',fontsize)
-title('(d)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
+title('(d)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.1,0.85]);
 yticks([])
 clim([0,0.025])
-c = colorbar(f2(4),'Location','EastOutside','TickLabelInterpreter','latex');
-set(get(c,'label'),'string',sprintf('%s', '$\rho_{ToF}$'),'Interpreter','latex','FontSize',22);
-c.Ruler.Exponent = -2;
+cb = colorbar(f2(4),'Location','EastOutside','TickLabelInterpreter','latex');
+cb.Position = cb.Position + [0.1,0,0,0];
+cb.Ruler.Exponent = -2;
 
 set(f2, 'FontName','Times','FontSize',fontsize)
-
 %%%%%%%Figure 3%%%%%%%%%%%%%%
-figure
-%fig3 = tiledlayout(1,3);
-set(groot,'defaultAxesTickLabelInterpreter','latex')
-
-%f3(1) = nexttile(1);
-f3(1) = subplot(1,3,1);
-plot(grid_z_input, normalized_phase(2,:),'LineWidth',1.5,'Color','black')
-xlabel('$z \; (\mu m)$','Interpreter','latex','FontSize',fontsize)
-ylabel('$\varphi_c(z)$','Interpreter','latex','FontSize',fontsize)
-ylim([-1 1])
-yticks([-1, 0, 1])
-yticklabels({'$-\pi$','$0$', '$\pi$'})
-title('(a)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
-
-%f3(2) = nexttile(2);
-f3(2) = subplot(1,3,2);
+img3 = figure;
+f3 = tight_subplot(1,2,[0.1,0.075],[0.2, 0.2],[0.1, 0.1]);
+axes(f3(1))
 imagesc(grid_x, grid_z, rho_refined_RS_t1)
 xlabel('$x \; (\mu m)$','Interpreter', 'LaTeX','FontSize',fontsize)
-ylabel('$z \; (\mu m)$', 'Interpreter', 'LaTeX','FontSize',fontsize)
-title('(b)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
+ylb = ylabel('$z \; (\mu m)$', 'Interpreter', 'LaTeX','FontSize',fontsize);
+ylb.Position(1) = ylb.Position(1)-5;
+title('(a)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.15,0.85]);
 yticks([-5,55,105])
 clim([0,1])
 
-%f3(3) = nexttile(3);
-f3(3) = subplot(1,3,3);
+axes('Position',[.38 .6 .06 .15] );
+box on
+plot(grid_z_input, normalized_phase(2,:),'LineWidth',1.5,'Color','black')
+xlabel('$z \; (\mu m)$','Interpreter','latex')
+ylb = ylabel('$\varphi_c(z)$','Interpreter','latex');
+ylb.Position(1) = ylb.Position(1)+10;
+ylim([-1 1])
+yticks([-1, 0, 1])
+yticklabels({'$-\pi$','$0$', '$\pi$'})
+set(gca, 'YColor','white')
+set(gca,'XColor','white')
+
+axes(f3(2));
 imagesc(grid_x, grid_z, rho_refined_RS_t2)
 xlabel('$x \; (\mu m)$','Interpreter', 'LaTeX','FontSize',fontsize)
-title('(c)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
+title('(b)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.1,0.85]);
 yticks([])
 clim([0,1])
-cb = colorbar(f3(3),'TickLabelInterpreter','latex');
-colormap(gge_colormap)
-set(get(cb,'label'),'string',sprintf('%s', '$\rho_{ToF}$'),'Interpreter','latex','FontSize',22);
+cb = colorbar(f3(2),'Location','EastOutside','TickLabelInterpreter','latex');
+cb.Position = cb.Position + [0.1,0,0,0];
+set(get(cb,'Title'),'Interpreter','latex')
+set(get(cb,'Title'),'String','$\rho_{ToF}$')
+set(get(cb,'Title'),'FontSize',fontsize+5)
 set(cb, 'YTick',[0,0.5,1])
 
+colormap(gge_colormap)
 set(f3, 'FontName','Times','FontSize',fontsize)
-
-%Saving figure
-%set(gcf,'Units','inches');
-%screenposition = get(gcf,'Position');
-%set(gcf,...
-%    'PaperPosition',[0 0 screenposition(3:4)],...
-%    'PaperSize',[screenposition(3:4)]);
-%print -dpdf -painters fig1
