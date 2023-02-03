@@ -45,10 +45,10 @@ classdef class_phase_extraction <  class_physical_parameters & handle
         end
 
         %implement fitting formula independent of the interference class
-        function rho_tof = transversal_expansion_formula(obj, x, amplitude, contrast, phase)
+        function rho_tof = transversal_expansion_formula(obj, x, amplitude, contrast, phase, shift)
             sigma_t = sqrt(obj.hbar/(obj.m*obj.omega))*sqrt(1+(obj.omega*obj.expansion_time)^2);
             phase_shift_x = obj.m*x*obj.separation_distance/(obj.hbar*obj.expansion_time);
-            rho_tof = amplitude*exp(-x.^2/(sigma_t^2)).*(1+contrast*cos(phase_shift_x+phase));       
+            rho_tof = amplitude*exp(-x.^2/(sigma_t^2)).*(1+contrast*cos(phase_shift_x+phase))+shift;       
         end
 
         %initial guess for fitting based on analytical formula in the
@@ -96,15 +96,15 @@ classdef class_phase_extraction <  class_physical_parameters & handle
             reconstruced_tof = zeros(obj.longitudinal_resolution, obj.transversal_resolution);
             grid_x = linspace(obj.x_min, obj.x_max, obj.transversal_resolution);
             % Fmincon constraints: umplitude, contrast, phase
-            search_lower_bound = [0,0,-pi];
-            search_upper_bound = [inf,1, pi];
+            search_lower_bound = [0,0,-pi,0];
+            search_upper_bound = [inf,1, pi,inf];
 
             for i=1:obj.longitudinal_resolution
                 interference_slice = rho_tof_data(i,:);
-                fitted_interference_slice = @(p) obj.transversal_expansion_formula(grid_x, p(1), p(2), p(3));
+                fitted_interference_slice = @(p) obj.transversal_expansion_formula(grid_x, p(1), p(2), p(3), p(4));
                 tof_basic_cost_func = @(p) norm(interference_slice - fitted_interference_slice(p));
                 options = optimset('Display','none');
-                init_guess = [1,1,guessed_phase_profile(i)];
+                init_guess = [1,1,guessed_phase_profile(i),0];
                 
                 output = fmincon(tof_basic_cost_func, init_guess,[],[],[],[],search_lower_bound, search_upper_bound,[],options);
                 fitted_phase(i) = output(3);
