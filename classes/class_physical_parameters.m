@@ -7,7 +7,7 @@ classdef class_physical_parameters < handle
         hbar = 6.5821e-16; %reduced Planck constant (eV s)
 
         %setting up default condensate parameters, geometry, and tof
-        max_longitudinal_density = 60e6; %peak longitudinal density 60 atoms per microns
+        max_longitudinal_density = 100e6; %peak longitudinal density 100 atoms per microns
         omega = 4000; %x oscillator frequencies - transverse (s^-1)
         
         %by default, we have a condensate of length 100 microns, separated
