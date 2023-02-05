@@ -3,14 +3,14 @@
 addpath('../classes')
 addpath('../input')
 addpath('Data/')
-load('thermal_cov.mat')
-
+load('thermal_cov_50nk.mat')
+close all
 %Defining some parameters
 coarse_dim =50;
 weak_convolution = 0.005;
 strong_convolution = 0.01;
 weak_SNR = 1000;
-strong_SNR = 300;
+strong_SNR = 200;
 
 %initiate gaussian phase sampling class
 %phase_sampling_suite = class_gaussian_phase_sampling(cov_phase);
@@ -19,7 +19,7 @@ strong_SNR = 300;
 %coarse graining
 %phase_samples = phase_sampling_suite.coarse_grain(phase_samples, coarse_dim);
 
-load('chosen_sampled_phases_profile.mat');
+load('results_sampled_phases_profile.mat');
 
 %interference_suite1 -> no common phase
 %interference_suite2 -> with common phase
@@ -93,7 +93,7 @@ contrast6 = extraction_suite6.contrasts;
 
 %Making figures
 fontname = 'Times';
-fontsize = 18;
+fontsize = 16;
 z_grid = linspace(0,100,coarse_dim);
 x_grid = linspace(-60,60, size(rho_tof1,2));
 
@@ -142,6 +142,7 @@ hold on
 plot(z_grid, contrast2,'red')
 hold off
 ylabel('$C(z)$','Interpreter','latex','FontSize',fontsize)
+ylim([0.85,1])
 xlabel('$z\; (\mu m)$', 'Interpreter','latex','FontSize',fontsize)
 title('(d)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
 
@@ -248,6 +249,7 @@ hold on
 plot(z_grid, contrast6,'red')
 hold off
 ylabel('$C(z)$','Interpreter','latex','FontSize',fontsize)
+ylim([0.85,1])
 xlabel('$z\; (\mu m)$', 'Interpreter','latex','FontSize',fontsize)
 title('(d)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
 
