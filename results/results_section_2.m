@@ -1,15 +1,15 @@
 %Adding directories and loading input covariance matrix with variable
 %name'cov_phase' inside 'thermal_cov.mat'
-
+close all
 addpath('../classes')
 addpath('../input')
-load('thermal_cov.mat')
+load('thermal_cov_50nk.mat')
 load('fidelity_stats_and_cov.mat')
 if 0
 %initiate gaussian phase sampling class
 nmb_sampled_phases = 500;
 coarse_dim = 50;
-phase_sampling_suite = class_gaussian_phase_sampling(cov_phase);
+phase_sampling_suite = class_gaussian_phase_sampling(cov_phase_fine);
 relative_phase_samples = phase_sampling_suite.generate_profiles(nmb_sampled_phases);
 common_phase_samples = phase_sampling_suite.generate_profiles(nmb_sampled_phases);
 
@@ -53,8 +53,8 @@ for i = 1:nmb_sampled_phases
     extracted_relative_phases_2(i,:) = final_phase_2;
 
     %compute fidelities
-    f1 = extraction_suite_1.fidelity_coh(relative_phase_samples(i,:), final_phase_1);
-    f2 = extraction_suite_2.fidelity_coh(relative_phase_samples(i,:), final_phase_2);
+    f1 = extraction_suite_1.fidelity_coh(relative_phase_samples(i,:), final_phase_1)
+    f2 = extraction_suite_2.fidelity_coh(relative_phase_samples(i,:), final_phase_2)
     delta_fidelities(i) = f2 - f1;
     fidelities_1(i) = f1;
     fidelities_2(i) = f2;
@@ -67,62 +67,52 @@ correlation_suite_1 = class_1d_correlation(extracted_relative_phases_1);
 correlation_suite_2 = class_1d_correlation(extracted_relative_phases_2);
 cov1 = correlation_suite_1.cov_matrix;
 cov2 = correlation_suite_2.cov_matrix;
-end
 %save the data
-%save('fidelity_stats_and_cov.mat','fidelities_2','fidelities_1','delta_fidelities', ...
-%    'relative_phase_samples','common_phase_samples','extracted_relative_phases_2', ...
-%    'extracted_relative_phases_1', 'cov1', 'cov2')
-
+save('fidelity_stats_and_cov.mat','fidelities_2','fidelities_1','delta_fidelities', ...
+    'relative_phase_samples','common_phase_samples','extracted_relative_phases_2', ...
+    'extracted_relative_phases_1', 'cov1', 'cov2')
+end
 %Plotting the result
-fontsize = 28;
+fontsize = 16;
 fontname = 'Times';
-lower_clim = min(min(cov1,[],'all'), min(cov2, [],'all'));
-upper_clim = max(max(cov1,[],'all'), max(cov2, [],'all'));
 coarse_dim = 50;
 z_grid = linspace(0,100, coarse_dim);
 
 img = figure;
+f = tight_subplot(1,2,[0.1,0.1],[0.15, 0.15],[0.15, 0.15]);
 
-f(1) = subplot(1,3,1);
-histogram(fidelities_1, 'Normalization','probability','BinWidth',0.01)
+axes(f(1))
+histogram(fidelities_1, 'Normalization','probability','BinWidth',0.02)
 hold on
-histogram(fidelities_2, 'Normalization','probability','BinWidth',0.01)
+histogram(fidelities_2, 'Normalization','probability','BinWidth',0.02)
 hold off
 xlabel('Fidelities ($F$)','Interpreter','latex')
 ylabel('Probability','Interpreter','latex')
 xlim([0.8,1])
-title('(a)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.3,0.85]);
+title('(a)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
 yticks([0,0.1,0.2,0.3])
 
-g(1) = axes('Position',[.17 .625 .09 .25] );
+g(1) = axes('Position',[.18 .625 .09 .2] );
 box on
-histogram(delta_fidelities, 'Normalization','probability','FaceColor',"#EDB120")
+histogram(delta_fidelities, 'Normalization','probability','FaceColor',"#EDB120",'BinWidth', 0.01)
 xlabel('$\Delta F$','Interpreter','latex')
-xlim([-0.02,0.02])
+xlim([-0.05,0.05])
 
-
-f(2) = subplot(1,3,2);
-imagesc(z_grid, z_grid, cov1)
-xlabel('$z^\prime \; (\mu m)$', 'Interpreter','latex','FontSize',fontsize)
-ylabel('$z\; (\mu m)$', 'Interpreter','latex','FontSize',fontsize)
-title('(b)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
-yticks([0,50,100])
-clim([lower_clim, upper_clim])
-
-f(3) = subplot(1,3,3);
+axes(f(2))
 imagesc(z_grid, z_grid, cov2)
-yticks([])
+yticks([0,50,100])
 xlabel('$z^\prime\; (\mu m)$', 'Interpreter','latex','FontSize',fontsize)
-clim([lower_clim, upper_clim])
+ylb = ylabel('$z\; (\mu m)$', 'Interpreter','latex','FontSize',fontsize);
+ylb.Position(1) = ylb.Position(1)+2;
 cb = colorbar;
-cb.Position = cb.Position + [0.1,0,0,-0.05];
+clim([0,3])
+cb.Position = cb.Position + [0.1,0,0,0];
 set(get(cb,'Title'),'Interpreter','latex')
-set(get(cb,'Title'),'String','$\Gamma_{\phi\phi}$')
-set(get(cb,'Title'),'FontSize',fontsize)
-
-
-title('(c)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
+set(get(cb,'Title'),'String','$\Gamma_{\varphi\varphi}$')
+set(get(cb,'Title'),'FontSize',fontsize+4)
+set(cb,'YTick',[0,1,2,3])
+title('(b)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.15,0.85]);
 
 colormap(gge_colormap)
 set(f, 'FontName',fontname,'FontSize',fontsize)
-set(g, 'FontName',fontname,'FontSize',14)
+set(g, 'FontName',fontname,'FontSize',fontsize-6)
