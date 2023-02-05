@@ -6,7 +6,7 @@ addpath('../input')
 load('thermal_cov_50nk.mat')
 load('EXAMPLE_sampled_phase_profile.mat')
 coarse_dim = 50;
-SNR = 40;
+SNR = 100;
 phase_profile = pi*phase_profile;
 
 %initialize phase sampling clas
@@ -27,18 +27,18 @@ rho_tof_conv = interference_suite_coarse.convolution2d(rho_tof_coarse);
 rho_tof_noisy = interference_suite_coarse.add_gaussian_noise(rho_tof_conv, 1/SNR);
 
 %initializing phase extraction class
-phase_extraction_suite = class_phase_extraction(rho_tof_noisy);
+extraction_suite = class_phase_extraction(rho_tof_noisy);
 
 %perform phase extraction
-init_phase = phase_extraction_suite.init_phase_guess();
-final_phase = phase_extraction_suite.fitting(init_phase);
-
+init_phase = extraction_suite.init_phase_guess();
+final_phase = extraction_suite.fitting(init_phase);
+%if 0
 %reconstruction of rho tof
-rho_tof_reco = phase_extraction_suite.reconstructed_interference_pattern;
+rho_tof_reco = extraction_suite.reconstructed_interference_pattern;
 
 %amplitudes and contrasts
-amplitude = phase_extraction_suite.normalization_amplitudes;
-contrast = phase_extraction_suite.contrasts;
+amplitude = extraction_suite.normalization_amplitudes;
+contrast = extraction_suite.contrasts;
 
 
 %Plotting the results
@@ -51,12 +51,6 @@ fine_grid_z = linspace(0,gas_length, length(cov_phase_fine));
 coarse_grid_z = linspace(0,gas_length, coarse_dim);
 fine_grid_x = linspace(-60,60, size(rho_tof_fine,2));
 coarse_grid_x = linspace(-60,60, size(rho_tof_coarse, 2));
-
-%describe the phase in terms of the multiplication of pi and -pi
-phase_profile = phase_profile/pi;
-coarse_phase_profile = coarse_phase_profile/pi;
-init_phase = init_phase/pi;
-final_phase = final_phase/pi;
 
 %normalizing each rho tof
 rho_tof_fine = rho_tof_fine/max(rho_tof_fine, [],'all');
@@ -94,8 +88,8 @@ legend box off
 ylb = ylabel('$\varphi_{r,c}(z)$','Interpreter','latex','FontSize',fontsize);
 ylb.Position(1) = ylb.Position(1)+5;
 ylb.Position(2) = ylb.Position(2)+0.1;
-ylim([-1,1])
-yticks([-1, 0, 1])
+ylim([-pi,pi])
+yticks([-pi, 0, pi])
 xticks([0,50,100])
 yticklabels({'$-\pi$', '$0$', '$\pi$'})
 xlabel('$z\; (\mu m)$','Interpreter','latex')
@@ -156,10 +150,10 @@ xlabel('$z\; (\mu m)$','Interpreter','latex','FontSize',fontsize)
 ylabel('$\varphi_r(z)$','Interpreter','latex','FontSize',fontsize)
 legend({'$\varphi_r^{(true)}$','$\varphi_r^{(cal)}$', '$\varphi_r^{(fit)}$'},'Interpreter','latex')
 legend box off
-yticks([-1,0,1])
+yticks([-pi,0,pi])
 yticklabels({'$-\pi$','$0$','$\pi$'})
 xticks([0,50,100])
-ylim([-1,1])
+ylim([-pi,pi])
 title('(a)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.1,0.85]);
 
 axes('Position',[.2 .62 .12 .1] );
@@ -184,7 +178,7 @@ xlabel('$x\; (\mu m)$', 'Interpreter','latex')
 xticks([-60,0,60])
 yticks([])
 cb = colorbar;
-cb.Position = cb.Position + [0.1,0,0,0];
+cb.Position = cb.Position + [0.08,0,0,0];
 set(get(cb,'Title'),'Interpreter','latex')
 set(get(cb,'Title'),'String','$\rho_{ToF}$')
 set(get(cb,'Title'),'FontSize',fontsize)
@@ -194,3 +188,4 @@ title('(c)','FontName','Times','Color','black','Units', 'normalized','Interprete
 
 colormap(gge_colormap)
 set(f6, 'FontName',fontname,'FontSize',fontsize)
+%end
