@@ -24,7 +24,7 @@ rho_refined_R_t1 = rho_refined_R_t1./max(rho_refined_R_t1,[], 'all');
 
 %calculating the longitudinal expansion for t = 7 ms
 nmb_buffer_pixel = interference_suite_R_t1.nmb_buffer_points_z;
-expansion_buffer_t1 = rho_refined_R_t1(1:nmb_buffer_pixel+1,:);
+expansion_buffer_t1 = rho_refined_RS_t1(1:nmb_buffer_pixel+1,:);
 
 %generating tof data for t = 15.6 ms
 rho_local_t2 = interference_suite_R_t2.tof_transversal_expansion();
@@ -37,7 +37,7 @@ rho_refined_RS_t2 = rho_refined_RS_t2./max(rho_refined_RS_t2,[],'all');
 rho_refined_R_t2 = rho_refined_R_t2./max(rho_refined_R_t2,[], 'all');
 
 %calculating the longitudinal expansion for t = 15.6 ms
-expansion_buffer_t2 = rho_refined_R_t2(1:nmb_buffer_pixel+1,:);
+expansion_buffer_t2 = rho_refined_RS_t2(1:nmb_buffer_pixel+1,:);
 
 %Plotting
 %Setting up grid & parameters
@@ -62,12 +62,12 @@ title('(a)','FontName','Times','Color','black','Units', 'normalized','Interprete
 yticks([-5,55,105])
 clim([0,1])
 
-axes('Position',[.38 .6 .06 .15] );
+g = axes('Position',[.38 .66 .06 .1] );
 box on
 plot(grid_z_input, normalized_phase(1,:),'LineWidth',1.5,'Color','red')
 xlabel('$z \; (\mu m)$','Interpreter','latex')
 ylb = ylabel('$\varphi_r(z)$','Interpreter','latex');
-ylb.Position(1) = ylb.Position(1)+35;
+ylb.Position(1) = ylb.Position(1)+50;
 ylim([-1 1])
 yticks([-1, 0, 1])
 yticklabels({'$-\pi$','$0$', '$\pi$'})
@@ -89,21 +89,36 @@ set(cb, 'YTick',[0,0.5,1])
 
 colormap(gge_colormap)
 set(f1, 'FontName','Times','FontSize',fontsize)
+set(g, 'FontName','Times','FontSize',fontsize-8)
 
 %%%%%%Figure 2%%%%%%%%%
 img2 = figure;
-f2 = tight_subplot(2,2,[0.1,0.075],[0.1, 0.1],[0.15, 0.15]);
+f2 = tight_subplot(2,2,[0.1,0.075],[0.12, 0.12],[0.15, 0.15]);
 %fig2 = tiledlayout(2,2);
 axes(f2(1));
-imagesc(grid_x, grid_z, rho_refined_R_t1);
+imagesc(grid_x, grid_z, rho_refined_RS_t1);
 ylabel('$z \; (\mu m)$', 'Interpreter', 'LaTeX','FontSize',fontsize)
 title('(a)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[-0.2,0.85]);
 yticks([-5,55,105])
 xticks([])
 clim([0,1])
 
+g = axes('Position',[.38 .77 .06 .08] );
+box on
+plot(grid_z_input, normalized_phase(2,:),'LineWidth',1.1,'Color','black','LineStyle','--')
+hold on
+plot(grid_z_input, normalized_phase(1,:),'LineWidth',1.1,'Color','red')
+xlabel('$z \; (\mu m)$','Interpreter','latex')
+ylb = ylabel('$\varphi_{r,c}(z)$','Interpreter','latex');
+ylb.Position(1) = ylb.Position(1)+20;
+ylim([-1 1])
+yticks([-1, 0, 1])
+yticklabels({'$-\pi$','$0$', '$\pi$'})
+set(gca, 'YColor','white')
+set(gca,'XColor','white')
+
 axes(f2(2));
-imagesc(grid_x, grid_z, rho_refined_R_t2);
+imagesc(grid_x, grid_z, rho_refined_RS_t2);
 xticks([])
 yticks([])
 title('(b)','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex', 'Position',[-0.1,0.85]);
@@ -135,6 +150,8 @@ cb.Position = cb.Position + [0.1,0,0,0];
 cb.Ruler.Exponent = -2;
 
 set(f2, 'FontName','Times','FontSize',fontsize)
+set(g, 'FontName','Times','FontSize',fontsize-8)
+if 0
 %%%%%%%Figure 3%%%%%%%%%%%%%%
 img3 = figure;
 f3 = tight_subplot(1,2,[0.1,0.075],[0.2, 0.2],[0.1, 0.1]);
@@ -174,3 +191,4 @@ set(cb, 'YTick',[0,0.5,1])
 
 colormap(gge_colormap)
 set(f3, 'FontName','Times','FontSize',fontsize)
+end
