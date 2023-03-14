@@ -115,7 +115,7 @@ classdef class_phase_extraction <  class_physical_parameters & handle
             end
             fitted_phase = obj.clean_phase_jump(fitted_phase);
             obj.phase_result_fit = fitted_phase;
-            obj.normalization_amplitudes = amp;
+            obj.normalization_amplitudes = amp*max(obj.input_tof_data, [],'all');
             obj.contrasts = contr;
             obj.reconstructed_interference_pattern = reconstruced_tof*max(obj.input_tof_data,[],'all');
             obj.all_fit_parameters = fit_params;
