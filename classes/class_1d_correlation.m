@@ -65,7 +65,8 @@ classdef class_1d_correlation
                 corr(idx{:}) = avg;
              end
         end
-
+    
+    %function to compute covariance matrix
     function cov_matrix = covariance_matrix(obj, phase_profiles_data)
         if nargin < 2
             phase_profiles_data = obj.all_phase_profiles;
@@ -106,6 +107,33 @@ classdef class_1d_correlation
         end
         %Loop end
     end
+
+    %function to compute correlation in Fourier space
+    function fourier_cov = fourier_correlation(obj, phase_profiles_data)
+        if nargin<2
+            phase_profiles_data = obj.all_phase_profiles;
+        end 
+        %Compute fft for each profile
+        fourier_data = transpose(abs(fft(transpose(phase_profiles_data)))*(1/sqrt(size(phase_profiles_data,2))));
+        
+        %single sampling - remove frequency above Nyquist frequency
+        l = size(fourier_data,2)/2+1;
+        fourier_data = fourier_data(:,1:l);
+
+        %Compute correlation
+        fourier_cov = zeros(l, l);
+        for i = 1:obj.nmb_of_sampled_profiles
+            for j = 1:l
+                for k =1:l
+                        fourier_cov(j,k) = fourier_cov(j,k)+fourier_data(i,j)*fourier_data(i,k);
+                end
+            end
+        end
+        fourier_cov = (1/obj.nmb_of_sampled_profiles)*fourier_cov;
+        
+    end
+    
+
   end
 
   %%%%%%Static methods%%%%%%%%%%%%
