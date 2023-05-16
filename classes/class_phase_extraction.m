@@ -96,8 +96,8 @@ classdef class_phase_extraction <  class_physical_parameters & handle
             reconstruced_tof = zeros(obj.longitudinal_resolution, obj.transversal_resolution);
             grid_x = linspace(obj.x_min, obj.x_max, obj.transversal_resolution);
             % Fmincon constraints: umplitude, contrast, phase
-            search_lower_bound = [0,0,-pi,0];
-            search_upper_bound = [inf,1, pi,inf];
+            search_lower_bound = [0,0,-2*pi,0];
+            search_upper_bound = [inf,1, 2*pi,inf];
 
             for i=1:obj.longitudinal_resolution
                 interference_slice = rho_tof_data(i,:);
