@@ -6,6 +6,7 @@ classdef class_gaussian_phase_sampling < class_physical_parameters
         covariance_matrix
         mean_vector
         nmb_longitudinal_points
+        nmb_sampled_profles
         phase_profiles
 
         %convolution
@@ -53,20 +54,44 @@ classdef class_gaussian_phase_sampling < class_physical_parameters
         samples = mvnrnd(obj.mean_vector, obj.covariance_matrix, nmb_of_samples);
         for i = 1:nmb_of_samples
             samples(i,:) = obj.convolution_1d(samples(i,:));
-        end       
+        end
+        obj.phase_profiles = samples;
+        obj.nmb_sampled_profles = nmb_of_samples; 
     end
 
     %4. Coarse-graining phase profile
-    function coarse_profile = coarse_grain(obj, profile, target_longitudinal_points)
+    function coarse_profile = coarse_grain(obj, target_longitudinal_points, profile)
+            if nargin < 3
+                profile = obj.phase_profiles;
+            end
             [Z] = ndgrid(1:obj.nmb_longitudinal_points)';
             nmb_samples = size(profile,1);
             coarse_profile = zeros(nmb_samples,target_longitudinal_points);
+            
             for i = 1:nmb_samples
                 profile_interpolant = griddedInterpolant(Z,profile(i,:));
                 coarse_profile(i,:) = profile_interpolant(linspace(1,obj.nmb_longitudinal_points, target_longitudinal_points));
             end
     end
     
+    %5. Referencing phase profile (to remove zero mode)
+    %Set the phase in the middle of the condensate to be zero
+    function referenced_profile = reference_profiles(obj, profile)
+        if nargin < 2
+            profile = obj.phase_profiles;
+        end
+        res = size(profile, 2);
+        for i = 1:obj.nmb_sampled_profles
+            if rem(res, 2) == 0
+                profile(i,:) = profile(i,:) - (profile(i,res/2) + profile(i,res/2+1))/2;
+            elseif rem(res,2) == 1
+                profile(i,:) = profile(i,:) - profile(i,ceil(res/2));  
+            end
+        end
+        referenced_profile = profile;
+    end
+    
+    %end methods
     end
 
     methods (Static)
