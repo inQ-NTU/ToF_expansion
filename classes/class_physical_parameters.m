@@ -7,8 +7,8 @@ classdef class_physical_parameters < handle
         hbar = 6.5821e-16; %reduced Planck constant (eV s)
 
         %setting up default condensate parameters, geometry, and tof
-        max_longitudinal_density = 100e6; %peak longitudinal density 100 atoms per microns
-        omega = 4000; %x oscillator frequencies - transverse (s^-1)
+        max_longitudinal_density = 75e6; %peak longitudinal density 100 atoms per microns
+        omega = 3000; %x oscillator frequencies - transverse (s^-1)
         
         %by default, we have a condensate of length 100 microns, separated
         %a distance 3 microns initially, and spread over 120 microns after
@@ -17,11 +17,11 @@ classdef class_physical_parameters < handle
         x_max = 60e-6;
         default_condensate_length = 100e-6;
         default_separation_distance = 3e-6; 
-        default_expansion_time = 15.6e-3;
+        default_expansion_time = 15e-3;
         
         %default convolution scale
-        default_1d_conv_scale = 0.003;
-        default_2d_conv_scale = 0.03; 
+        default_1d_conv_scale = 0.000001;
+        default_2d_conv_scale = 0.05; 
         
     end
     
