@@ -127,7 +127,7 @@ classdef class_interference_pattern< class_physical_parameters
         % single particle Green's function (Eq. 56 of Yuri's paper)
         function single_particle_green_function = green_function(obj,z,zp,t)
             single_particle_green_function = sqrt( obj.m/(2*pi*1j*obj.hbar*t) )...
-                *exp( ( (1j*obj.m)/(2*obj.hbar*t) )*(z-zp).^2 );
+                *exp( ( (obj.m)/(2*1j*obj.hbar*t) )*(z-zp).^2 );
         end
 
         %% TOF interference functions
@@ -139,7 +139,7 @@ classdef class_interference_pattern< class_physical_parameters
                 expansion_time = obj.expansion_time;
             end
             density_sigma_t = obj.compute_density_sigma_t(expansion_time);
-            %the dimensionless Gaussian functions are given as
+            %normalized Gaussian functions are given as
             transversal_density = class_interference_pattern.normalized_Gaussian(obj.output_grid_x,...
                 separation_distance_d/(2), density_sigma_t);
         end
@@ -163,11 +163,17 @@ classdef class_interference_pattern< class_physical_parameters
         end
 
         %longitudinal density
+
+        %Thomas-Fermi density - Inverse parabola
         function rho = longitudinal_density(obj, z)
             gas_length = obj.condensate_length_Lz;
             max_density = obj.max_longitudinal_density;
             rho = (4*max_density*z/gas_length)*(1-z/gas_length)*(obj.step_func(z)-obj.step_func(z-gas_length));
         end
+        %In case if we want flat density profile
+        %function rho = longitudinal_density(obj, z)
+        %    rho = obj.max_longitudinal_density;
+        %end
 
         %TOF FORMULA: transversal expansion only%
         function rho_tof = tof_transversal_expansion(obj, relative_phase)
@@ -276,6 +282,7 @@ classdef class_interference_pattern< class_physical_parameters
       function f = normalized_Gaussian(x, mean, standard_deviation)
             %the dimensionless Gaussian functions are given as
             f = ( 1 / (sqrt(2*pi)*standard_deviation) )*exp(- ((x - mean).^2)/(2*standard_deviation^2) ) ;
+            %f = exp(- ((x - mean).^2)/(2*standard_deviation^2) ) ;
       end
 
       %Step function for defining longitudinal density
