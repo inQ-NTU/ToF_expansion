@@ -15,6 +15,9 @@ classdef class_interference_pattern< class_physical_parameters
         condensate_length_Lz
         buffer_length
 
+        %flags
+        flag_interaction_broadening  %0: no interaction broadening, 1: include interaction broadening
+
         %grids - there are three grids:
         %1. input grid - determined by input phase profile
         %2. output grid - taking into account both input and buffer (for
@@ -53,10 +56,10 @@ classdef class_interference_pattern< class_physical_parameters
                 obj.expansion_time = expansion_time;
             end
 
-            if nargin<3
-                obj.buffer_length = 0;
+            if nargin < 3
+                obj.flag_interaction_broadening = 0;
             else
-                obj.buffer_length = buffer_length;
+                obj.flag_interaction_broadening = flag_interaction_broadening;
             end
 
             if nargin < 4
@@ -69,6 +72,12 @@ classdef class_interference_pattern< class_physical_parameters
                 obj.condensate_length_Lz = obj.default_condensate_length;
             else
                 obj.condensate_length_Lz = condensate_length_Lz;
+            end
+
+            if nargin<6
+                obj.buffer_length = 0;
+            else
+                obj.buffer_length = buffer_length;
             end
 
             % 4. Set up profile, if dimension is 2 -> relative + common
@@ -134,8 +143,6 @@ classdef class_interference_pattern< class_physical_parameters
             density_sigma_t = density_sigma_init*sqrt(1+obj.omega^2*time.^2);
        end
         
-        
-        % single particle Green's function (Eq. 56 of Yuri's paper)
         % single particle Green's function
         function single_particle_green_function = green_function(obj,z,zp,t)
             single_particle_green_function = sqrt( obj.m/(2*pi*1j*obj.hbar*t) )...
@@ -293,9 +300,8 @@ classdef class_interference_pattern< class_physical_parameters
       end
       
       function f = normalized_Gaussian(x, mean, standard_deviation)
-            %the dimensionless Gaussian functions are given as
-            f = ( 1 / (sqrt(2*pi)*standard_deviation) )*exp(- ((x - mean).^2)/(2*standard_deviation^2) ) ;
-            %f = exp(- ((x - mean).^2)/(2*standard_deviation^2) ) ;
+            %the normalized Gaussian functions are given as
+            f = ( 1 / ((2*pi)*standard_deviation)^(1/4))*exp(- ((x - mean).^2)/(2*standard_deviation^2) ) ;
       end
 
       %Step function for defining longitudinal density
