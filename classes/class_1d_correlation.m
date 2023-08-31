@@ -37,6 +37,37 @@ classdef class_1d_correlation
 
         end
 
+        %Function to compute fourth order correlation G(z1, z2, z3, z4) function for fixed z3
+        %and z4
+        function corr = fourth_order_corr(obj, z3_idx, z4_idx, phase_profiles_data)
+            if nargin<4
+                phase_profiles_data = obj.all_phase_profiles;
+            end
+
+            %referencing the phase profiles
+            for i = 1:obj.nmb_of_sampled_profiles
+                phase_profiles_data(i,:) = phase_profiles_data(i,:) - phase_profiles_data(i,floor(obj.longitudinal_resolution/2)); 
+            end
+
+            %Computing the correlation
+            corr = zeros(obj.longitudinal_resolution, obj.longitudinal_resolution);
+            for i = 1:obj.longitudinal_resolution
+                for j = 1:obj.longitudinal_resolution
+                    prod = 0;
+                    for k = 1:obj.nmb_of_sampled_profiles
+                        prod = prod + phase_profiles_data(k,i)*phase_profiles_data(k,j)*phase_profiles_data(k, z3_idx)*phase_profiles_data(k, z4_idx);
+                    end
+                    prod = prod/obj.nmb_of_sampled_profiles;
+                    corr(i,j) = prod;
+                end
+            end
+        end
+
+        %Function to compute third order correlation for fixed z3 and z4
+        
+
+
+
         %Function to compute correlation function of any order
         function corr = correlation_func(obj, order, phase_profiles_data)
             if nargin<3
@@ -49,6 +80,7 @@ classdef class_1d_correlation
                 unique_perms = unique(perms(combs(i,:)),'rows');
                 combs = [combs;unique_perms(2:end,:)];
             end
+
             %Computing the average of the product of the phases for each
             %possible (z_1, z_2, ..., z_N)
             for i = 1:size(combs,1)
