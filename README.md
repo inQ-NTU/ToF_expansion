@@ -1,5 +1,5 @@
 # ToF_expansion
-A minimal code to simulate interference pattern data acquisition and relative phase extraction of a two parallel one-dimensional Bose gas in time-of-flight experiments. In particular, this code takes into account longitudinal expansion and coupling to common-phase degrees of freedom (see Ref. [1]). This code requires "Statistics and Machine Learning Toolbox" and "Optimization Toolbox". 
+A minimal code to simulate interference pattern data acquisition and relative phase extraction of a two parallel one-dimensional Bose gas in time-of-flight experiments. In particular, this code takes into account longitudinal expansion and mixing with common degrees of freedom (see Ref. [1]). This code requires "Statistics and Machine Learning Toolbox" and "Optimization Toolbox". 
 
 The directory is structured as follows: <br />
 ├── classes &emsp;&emsp;            # main classes  <br />
@@ -8,7 +8,7 @@ The directory is structured as follows: <br />
 ├── input    &emsp;&ensp;&emsp;&nbsp;     # input files needed for examples and results <br />
 └── README.md <br />
 
-The structure of the classes is shown in a diagram below. The red vertical lines represent inheritance and the blue lines represent simulation workflow.  <br/>
+The structure of the classes is shown in the diagram below. The red vertical lines represent inheritance and the blue lines represent simulation workflow.  <br/>
 ![class_structure](classes/class_structure.png)
 
 ## References
