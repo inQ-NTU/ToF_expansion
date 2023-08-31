@@ -40,8 +40,11 @@ classdef class_gaussian_phase_sampling < class_physical_parameters
     end
 
     %2. Convolving the phase profile
-    function conv_profile = convolution_1d(obj, phase_profile)
-        sigma = obj.convolution_scale * obj.nmb_longitudinal_points;
+    function conv_profile = convolution_1d(obj, phase_profile, convolution_scale)
+        if nargin < 3
+            convolution_scale = obj.convolution_scale;
+        end
+        sigma = convolution_scale * obj.nmb_longitudinal_points;
         S = obj.convolution_matrix(sigma, obj.nmb_longitudinal_points);
         conv_profile = (S*phase_profile')';
     end
