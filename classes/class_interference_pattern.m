@@ -237,6 +237,19 @@ classdef class_interference_pattern< class_physical_parameters
         end
 
 
+       %Processing of the TOF interference image
+
+      %Normalizing the interference pattern - \int rho dx dz = N where N is
+      %the total number of atoms
+      function normalized_rho_tof = normalize(obj, rho_tof, N)
+          sum_density = sum(rho_tof, "all");
+          pixel_width_z = obj.condensate_length_Lz/size(rho_tof, 1);
+          pixel_width_x = (obj.x_max - obj.x_min)/size(rho_tof, 2);
+          normalizing_coeff = sum_density*pixel_width_x*pixel_width_z;
+          normalized_rho_tof = (N/normalizing_coeff)*rho_tof;
+      end
+
+
         function convolved_tof = convolution2d(obj, rho_tof, convolution_scale)
             if nargin <3
                 convolution_scale = obj.default_2d_conv_scale;
