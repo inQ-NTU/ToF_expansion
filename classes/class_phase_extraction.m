@@ -17,15 +17,19 @@ classdef class_phase_extraction <  class_physical_parameters & handle
         phase_result_fit
         normalization_amplitudes
         contrasts
+        gaussian_width
         all_fit_parameters
         reconstructed_interference_pattern
+
+        %flag
+        flag_interaction_broadening
 
     end
 
     methods
 
         %% This implements the constructor
-        function obj = class_phase_extraction(input_tof_data, expansion_time, separation_distance)
+        function obj = class_phase_extraction(input_tof_data, expansion_time, flag_interaction_broadening, separation_distance)
             if nargin < 2
                 obj.expansion_time = obj.default_expansion_time;
             else
@@ -33,6 +37,12 @@ classdef class_phase_extraction <  class_physical_parameters & handle
             end
 
             if nargin<3
+                obj.flag_interaction_broadening = 0;
+            else
+                obj.flag_interaction_broadening = flag_interaction_broadening;
+            end
+
+            if nargin<4
                 obj.separation_distance = obj.default_separation_distance;
             else
                 obj.separation_distance = separation_distance;
@@ -45,10 +55,10 @@ classdef class_phase_extraction <  class_physical_parameters & handle
         end
 
         %implement fitting formula independent of the interference class
-        function rho_tof = transversal_expansion_formula(obj, x, amplitude, contrast, phase, shift)
-            sigma_t = sqrt(obj.hbar/(obj.m*obj.omega))*sqrt(1+(obj.omega*obj.expansion_time)^2);
-            phase_shift_x = obj.m*x*obj.separation_distance/(obj.hbar*obj.expansion_time);
-            rho_tof = amplitude*exp(-x.^2/(sigma_t^2)).*(1+contrast*cos(phase_shift_x+phase))+shift;       
+        function rho_tof = transversal_expansion_formula(obj, x, amplitude, sigma, contrast, phase, shift)
+            %wave number associated with fringe spacing
+            kF = obj.separation_distance*(1+(obj.omega*obj.expansion_time)^2)/((sigma^2)*obj.omega*obj.expansion_time); 
+            rho_tof = amplitude*exp(-x.^2/(sigma^2)).*(1+contrast*cos(kF*x+phase))+shift;       
         end
 
         %initial guess for fitting based on analytical formula in the
@@ -89,34 +99,58 @@ classdef class_phase_extraction <  class_physical_parameters & handle
             end
             %Define an objective/cost function from the interference class
             % write a loop for slice
+            
             fitted_phase = zeros(1,obj.longitudinal_resolution);
             amp = zeros(1,obj.longitudinal_resolution);
             contr = zeros(1,obj.longitudinal_resolution);
             fit_params = cell(1, obj.longitudinal_resolution);
             reconstruced_tof = zeros(obj.longitudinal_resolution, obj.transversal_resolution);
+            
             grid_x = linspace(obj.x_min, obj.x_max, obj.transversal_resolution);
-            % Fmincon constraints: umplitude, contrast, phase
-            search_lower_bound = [0,0,-2*pi,0];
-            search_upper_bound = [inf,1, 2*pi,inf];
+            sigma_t = sqrt(obj.hbar/(obj.m*obj.omega))*sqrt(1+(obj.omega*obj.expansion_time)^2)*1e6; %in microns
+            gauss_width = sigma_t*ones(1,obj.longitudinal_resolution);
 
+            % Fmincon constraints: umplitude, contrast, phase
+            if obj.flag_interaction_broadening == 0
+                search_lower_bound = [0,0,-2*pi];
+                search_upper_bound = [inf,1, 2*pi];
+            else
+                search_lower_bound = [0,0,-2*pi,0];
+                search_upper_bound = [inf,1, 2*pi,100];
+            end
+            %Do fitting for each slice of image (fixed z)
             for i=1:obj.longitudinal_resolution
                 interference_slice = rho_tof_data(i,:);
-                fitted_interference_slice = @(p) obj.transversal_expansion_formula(grid_x, p(1), p(2), p(3), p(4));
-                tof_basic_cost_func = @(p) norm(interference_slice - fitted_interference_slice(p));
-                options = optimset('Display','none');
-                init_guess = [1,1,guessed_phase_profile(i),0];
-                
-                output = fmincon(tof_basic_cost_func, init_guess,[],[],[],[],search_lower_bound, search_upper_bound,[],options);
-                fitted_phase(i) = output(3);
-                amp(i) = output(1);
-                contr(i) = output(2);
-                reconstruced_tof(i,:) = fitted_interference_slice(output);
-                fit_params{i} = output;
+                if obj.flag_interaction_broadening == 0
+                    fitted_interference_slice = @(p) obj.transversal_expansion_formula(grid_x, p(1), sigma_t*1e-6, p(2), p(3),0);
+                    tof_basic_cost_func = @(p) norm(interference_slice - fitted_interference_slice(p));
+                    options = optimset('Display','none');
+                    init_guess = [1,1,guessed_phase_profile(i)];        
+                    output = fmincon(tof_basic_cost_func, init_guess,[],[],[],[],search_lower_bound, search_upper_bound,[],options);
+                    fitted_phase(i) = output(3);
+                    amp(i) = output(1);
+                    contr(i) = output(2);
+                    reconstruced_tof(i,:) = fitted_interference_slice(output);
+                    fit_params{i} = output;
+                else
+                    fitted_interference_slice = @(p) obj.transversal_expansion_formula(grid_x, p(1), p(4)*1e-6, p(2), p(3),0);
+                    tof_basic_cost_func = @(p) norm(interference_slice - fitted_interference_slice(p));
+                    options = optimset('Display','none');
+                    init_guess = [1,1,guessed_phase_profile(i),sigma_t];        
+                    output = fmincon(tof_basic_cost_func, init_guess,[],[],[],[],search_lower_bound, search_upper_bound,[],options);
+                    fitted_phase(i) = output(3);
+                    amp(i) = output(1);
+                    contr(i) = output(2);
+                    gauss_width(i) = output(4);
+                    reconstruced_tof(i,:) = fitted_interference_slice(output);
+                    fit_params{i} = output;
+                end
             end
             fitted_phase = obj.clean_phase_jump(fitted_phase);
             obj.phase_result_fit = fitted_phase;
             obj.normalization_amplitudes = amp*max(obj.input_tof_data, [],'all');
             obj.contrasts = contr;
+            obj.gaussian_width = gauss_width;
             obj.reconstructed_interference_pattern = reconstruced_tof*max(obj.input_tof_data,[],'all');
             obj.all_fit_parameters = fit_params;
         end
