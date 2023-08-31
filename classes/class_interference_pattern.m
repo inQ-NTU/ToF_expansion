@@ -41,8 +41,8 @@ classdef class_interference_pattern< class_physical_parameters
     methods
 
         %% Constructor
-        function obj = class_interference_pattern(phase_profile_RS, expansion_time, buffer_length, ...
-                separation_distance_d, condensate_length_Lz)
+        function obj = class_interference_pattern(phase_profile_RS, expansion_time, flag_interaction_broadening, ...
+                separation_distance_d, condensate_length_Lz, buffer_length)
 
             % 1. Run the parent class constructor
             obj = obj@class_physical_parameters();
@@ -113,18 +113,30 @@ classdef class_interference_pattern< class_physical_parameters
             % 8.1 Interpolate phase profiles using condensate grid
             obj.get_relative_phase_z = obj.phase_profile_interpolation_init(obj.input_grid_z, obj.relative_phase_profile);
             obj.get_common_phase_z = obj.phase_profile_interpolation_init(obj.input_grid_z, obj.common_phase_profile);
-            % 8.2 Prefactors in the integrals
-            obj.transversal_density_avg_squared = obj.compute_density_prefactor();
-            obj.phase_shift_d_x_t = obj.compute_phase_shift_d_x_t();
         end
 
         %Expansion dynamics
-        function density_sigma_t = compute_density_sigma_t(obj,time)
-            density_sigma_t = sqrt( obj.hbar/(obj.m*obj.omega) )*sqrt(1+obj.omega^2*time.^2);
+        %Initial width of the Gaussian - can be with or without interaction
+        %broadening
+        function density_sigma_init = compute_density_sigma_init(obj, z)
+            if obj.flag_interaction_broadening == 0
+                density_sigma_init = sqrt( obj.hbar/(obj.m*obj.omega) );
+            else
+                density_sigma_init = sqrt( obj.hbar/(obj.m*obj.omega) )*sqrt(1+obj.scattering_length*obj.longitudinal_density(z));
+            end
         end
+
+        function density_sigma_t = compute_density_sigma_t(obj, z, time)
+            if nargin <3
+                time = obj.expansion_time;
+            end
+            density_sigma_init = obj.compute_density_sigma_init(z);
+            density_sigma_t = density_sigma_init*sqrt(1+obj.omega^2*time.^2);
+       end
         
         
         % single particle Green's function (Eq. 56 of Yuri's paper)
+        % single particle Green's function
         function single_particle_green_function = green_function(obj,z,zp,t)
             single_particle_green_function = sqrt( obj.m/(2*pi*1j*obj.hbar*t) )...
                 *exp( ( (obj.m)/(2*1j*obj.hbar*t) )*(z-zp).^2 );
@@ -134,36 +146,36 @@ classdef class_interference_pattern< class_physical_parameters
 
         % phase prefactors used in 3D ToF expansion -> reduce the number of
         % necessary function
-        function transversal_density = integrand_density_prefactor(obj,separation_distance_d,expansion_time)
-            if nargin == 2
+        function transversal_density = integrand_density_prefactor(obj,separation_distance_d,longitudinal_position_z,expansion_time)
+            if nargin < 4
                 expansion_time = obj.expansion_time;
             end
-            density_sigma_t = obj.compute_density_sigma_t(expansion_time);
+            density_sigma_t = obj.compute_density_sigma_t(longitudinal_position_z, expansion_time);
             %normalized Gaussian functions are given as
             transversal_density = class_interference_pattern.normalized_Gaussian(obj.output_grid_x,...
                 separation_distance_d/(2), density_sigma_t);
         end
 
-        function tof_dependent_phase_factor = x_dependent_integrand_prefactor(obj, separation_distance_d,expansion_time)
-            if nargin == 2
-                expansion_time = obj.expansion_time;
-            end
-            tof_dependent_phase_factor = exp( (1j*obj.m*separation_distance_d)/(2*obj.hbar.*expansion_time).*obj.output_grid_x );
+        function fringe_spacing = compute_fringe_spacing(obj, separation_distance_d, z)
+            fringe_spacing = 2*pi*(obj.compute_density_sigma_init(z)^2)*obj.omega*obj.expansion_time/separation_distance_d;
+        end
+
+        function tof_dependent_phase_factor = x_dependent_integrand_prefactor(obj, separation_distance_d, z)
+            tof_dependent_phase_factor = exp (((1j*pi)/(obj.compute_fringe_spacing(separation_distance_d, z))).*obj.output_grid_x );
         end
 
         % phase prefactors used in transversal expansion
-        function transversal_density_avg_squared = compute_density_prefactor(obj)
-            density_prefactor_right = obj.integrand_density_prefactor(obj.separation_distance_d,obj.expansion_time);
-            density_prefactor_left = obj.integrand_density_prefactor(-obj.separation_distance_d,obj.expansion_time);
+        function transversal_density_avg_squared = compute_density_prefactor(obj, z)
+            density_prefactor_right = obj.integrand_density_prefactor(obj.separation_distance_d,z,obj.expansion_time);
+            density_prefactor_left = obj.integrand_density_prefactor(-obj.separation_distance_d,z,obj.expansion_time);
             transversal_density_avg_squared = 1/2*(density_prefactor_left.^2 + density_prefactor_right.^2);
         end
 
-        function phase_shift_d_x_t = compute_phase_shift_d_x_t(obj)
-            phase_shift_d_x_t = ( (obj.separation_distance_d*obj.m)/(obj.expansion_time*obj.hbar) )*(obj.output_grid_x);
+        function phase_shift_d_x_t = compute_phase_shift_d_x_t(obj,separation_distance_d, z)
+            phase_shift_d_x_t = ( (2*pi)/obj.compute_fringe_spacing(separation_distance_d, z))*(obj.output_grid_x);
         end
 
-        %longitudinal density
-
+        %Longitudinal Density profiles
         %Thomas-Fermi density - Inverse parabola
         function rho = longitudinal_density(obj, z)
             gas_length = obj.condensate_length_Lz;
@@ -182,46 +194,34 @@ classdef class_interference_pattern< class_physical_parameters
             end
             rho_tof = zeros(length(obj.output_grid_z), length(obj.output_grid_x));
             for j = obj.nmb_buffer_points_z+1:length(obj.input_grid_z)+obj.nmb_buffer_points_z
-                rho_tof(j,:) = 2*obj.longitudinal_density(obj.output_grid_z(j))*obj.transversal_density_avg_squared.*( 1 + cos(relative_phase(j-obj.nmb_buffer_points_z) ...
-                + obj.phase_shift_d_x_t ) );
+                rho_tof(j,:) = 2*obj.longitudinal_density(obj.output_grid_z(j))*obj.compute_density_prefactor(obj.output_grid_z(j)).*( 1 + cos(relative_phase(j-obj.nmb_buffer_points_z) ...
+                + obj.compute_phase_shift_d_x_t(obj.separation_distance_d, obj.output_grid_z(j))) );
             end
         end
 
         %TOF FORMULA - full with longitudinal expansion (using Riemann sum
         %for integration
-        function rho_tof = tof_full_expansion( obj, relative_phase_profile, common_phase_profile)
-
-            if nargin < 2
+        function rho_tof = tof_full_expansion(obj, relative_phase_profile, common_phase_profile)
+            if nargin < 3
                 get_relative_phase_z = obj.get_relative_phase_z;
-                get_common_phase_z = obj.get_common_phase_z;
-            end
-            if nargin == 2
-                get_relative_phase_z = obj.phase_profile_interpolation_init(obj.input_grid_z, ...
-                    relative_phase_profile);
                 get_common_phase_z = obj.get_common_phase_z;
             end
             if nargin == 3
                 get_relative_phase_z = obj.phase_profile_interpolation_init(obj.input_grid_z, ...
                     relative_phase_profile);
-                get_common_phase_z = obj.phase_profile_interpolation_init(obj.input_grid_z, ...
-                    common_phase_profile);
+                get_common_phase_z = obj.get_common_phase_z;
             end
 
-            prefactor_right = obj.x_dependent_integrand_prefactor( obj.separation_distance_d );
-            prefactor_left = obj.x_dependent_integrand_prefactor( - obj.separation_distance_d );
-
-            density_prefactor_right = obj.integrand_density_prefactor( obj.separation_distance_d);
-            density_prefactor_left = obj.integrand_density_prefactor( - obj.separation_distance_d );
-           
-
             integrand_for_any_z = @(z_prime)  (...
-                ( obj.green_function( obj.output_grid_z, z_prime, obj.expansion_time )') .* (...
-                density_prefactor_right .* prefactor_right ...
+                ( obj.green_function( obj.output_grid_z, z_prime, obj.expansion_time )') .* ...
+                ( obj.integrand_density_prefactor( obj.separation_distance_d,z_prime).* ...
+                obj.x_dependent_integrand_prefactor(obj.separation_distance_d, z_prime)...
                 * sqrt(obj.longitudinal_density(z_prime))...
                 *exp( (1j/2) * get_common_phase_z( z_prime ) ) ...
                 * exp( (1j/2) *get_relative_phase_z( z_prime ) ) ...
                 + ...
-                density_prefactor_left .* prefactor_left ...
+                obj.integrand_density_prefactor( obj.separation_distance_d, z_prime) .*...
+                obj.x_dependent_integrand_prefactor( - obj.separation_distance_d, z_prime)...
                 *sqrt(obj.longitudinal_density(z_prime))...
                 * exp( (1j/2)*get_common_phase_z(z_prime) ) ...
                 *  exp( -(1j/2)* get_relative_phase_z( z_prime) )...
