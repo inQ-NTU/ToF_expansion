@@ -9,14 +9,14 @@ classdef class_physical_parameters < handle
         %setting up default condensate parameters, geometry, and tof
         max_longitudinal_density = 75e6; %peak longitudinal density 100 atoms per microns
         omega = 3000; %x oscillator frequencies - transverse (s^-1)
-        scattering_length = 5.2e-9;
+        scattering_length = 5.2e-9; %scattering length for interaction broadening
         
         %by default, we have a condensate of length 100 microns, separated
-        %a distance 3 microns initially, and spread over 120 microns after
+        %a distance 3 microns initially, and spread over x_{max} - x_{min} microns after
         %tof
-        x_min = -60e-6; 
-        x_max = 60e-6;
         default_condensate_length = 100e-6;
+        x_min = -50e-6;
+        x_max = 50e-6;
         default_separation_distance = 3e-6; 
         default_expansion_time = 15e-3;
         
