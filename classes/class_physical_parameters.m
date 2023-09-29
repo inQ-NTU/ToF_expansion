@@ -3,7 +3,7 @@ classdef class_physical_parameters < handle
     properties
         % fundamental parameters
         c = 3e8; %speed of light
-        m = (85.4678*931.494e6)/(3e8*3e8); %mass of Rubidium atoms (eV s^2/m^2)
+        m = (86.909*931.494e6)/(3e8*3e8); %mass of Rubidium atoms (eV s^2/m^2)
         hbar = 6.5821e-16; %reduced Planck constant (eV s)
 
         %setting up default condensate parameters, geometry, and tof
@@ -23,6 +23,9 @@ classdef class_physical_parameters < handle
         %default convolution scale
         default_1d_conv_scale = 0.000001;
         default_2d_conv_scale = 0.05; 
+
+        %default insitu density profile str
+        default_insitu_density = 'InverseParabola';
         
     end
     
