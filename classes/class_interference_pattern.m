@@ -17,6 +17,7 @@ classdef class_interference_pattern< class_physical_parameters
 
         %flags
         flag_interaction_broadening  %0: no interaction broadening, 1: include interaction broadening
+        insitu_density_profile_str
 
         %grids - there are three grids:
         %1. input grid - determined by input phase profile
@@ -44,7 +45,7 @@ classdef class_interference_pattern< class_physical_parameters
     methods
 
         %% Constructor
-        function obj = class_interference_pattern(phase_profile_RS, expansion_time, flag_interaction_broadening, ...
+        function obj = class_interference_pattern(phase_profile_RS, expansion_time, insitu_density_profile_str, flag_interaction_broadening, ...
                 separation_distance_d, condensate_length_Lz, buffer_length)
 
             % 1. Run the parent class constructor
@@ -57,18 +58,24 @@ classdef class_interference_pattern< class_physical_parameters
             end
 
             if nargin < 3
+                obj.insitu_density_profile_str = obj.default_insitu_density;
+            else
+               obj.insitu_density_profile_str = insitu_density_profile_str;     
+            end
+
+            if nargin < 4
                 obj.flag_interaction_broadening = 0;
             else
                 obj.flag_interaction_broadening = flag_interaction_broadening;
             end
 
-            if nargin < 4
+            if nargin < 5
                 obj.separation_distance_d = obj.default_separation_distance;
             else
                 obj.separation_distance_d = separation_distance_d;
             end
 
-            if nargin <5
+            if nargin <6
                 obj.condensate_length_Lz = obj.default_condensate_length;
             else
                 obj.condensate_length_Lz = condensate_length_Lz;
@@ -184,15 +191,39 @@ classdef class_interference_pattern< class_physical_parameters
 
         %Longitudinal Density profiles
         %Thomas-Fermi density - Inverse parabola
-        function rho = longitudinal_density(obj, z)
+        function rho = inverse_parabola_density(obj, z)
             gas_length = obj.condensate_length_Lz;
             max_density = obj.max_longitudinal_density;
             rho = (4*max_density*z/gas_length)*(1-z/gas_length)*(obj.step_func(z)-obj.step_func(z-gas_length));
         end
+
+        %Thomas-Fermi density - box potential
+        function rho = box_density(obj, z)
+            gas_length = obj.condensate_length_Lz;
+            max_density = obj.max_longitudinal_density;
+            falloff_param = 0.8;
+            rho = (max_density/2)*(tanh((z-gas_length/2)*1e6+falloff_param*gas_length*1e6/2)-tanh((z-gas_length/2)*1e6-falloff_param*gas_length*1e6/2));
+        end
+
+      
         %In case if we want flat density profile
-        %function rho = longitudinal_density(obj, z)
-        %    rho = obj.max_longitudinal_density;
-        %end
+        function rho = flat_density(obj, z)
+            rho = obj.max_longitudinal_density;
+        end
+
+        %Final longitudinal density
+        function rho = longitudinal_density(obj, z)
+            if strcmp(obj.insitu_density_profile_str, 'InverseParabola')
+                rho = obj.inverse_parabola_density(z);
+            elseif strcmp(obj.insitu_density_profile_str, 'BoxPotential')
+                rho = obj.box_density(z);
+            elseif strcmp(obj.insitu_density_profile_str, 'Flat')
+                rho = obj.flat_density(z);
+            else
+                rho = obj.inverse_parabola_density(z);
+                disp('The insitu density is not known. Using the default inverse parabola instead.')
+            end
+        end
 
         %TOF FORMULA: transversal expansion only%
         function rho_tof = tof_transversal_expansion(obj, relative_phase)
