@@ -113,10 +113,10 @@ classdef class_phase_extraction <  class_physical_parameters & handle
             % Fmincon constraints: umplitude, contrast, phase
             if obj.flag_fit_width == 0
                 search_lower_bound = [0,0,-inf,-2*pi];
-                search_upper_bound = [inf,1,inf,2*pi];
+                search_upper_bound = [inf,2,inf,2*pi];
             else
                 search_lower_bound = [0,0,-2*pi,-inf,0];
-                search_upper_bound = [inf,1, 2*pi,inf,100];
+                search_upper_bound = [inf,2, 2*pi,inf,100];
             end
             %Do fitting for each slice of image (fixed z)
             for i=1:obj.longitudinal_resolution
