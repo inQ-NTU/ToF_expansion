@@ -16,7 +16,7 @@ classdef class_gaussian_phase_sampling < class_physical_parameters
     methods
     
     %1. Implement the constructor   
-    function obj = class_gaussian_phase_sampling(cov_matrix, convolution_sigma, mean_vector)
+    function obj = class_gaussian_phase_sampling(cov_matrix, mean_vector)
         
         if issymmetric(cov_matrix)
             obj.covariance_matrix = cov_matrix;
@@ -25,14 +25,8 @@ classdef class_gaussian_phase_sampling < class_physical_parameters
         end
         
         obj.nmb_longitudinal_points = size(cov_matrix, 1);
-        
-        if nargin < 2
-            obj.convolution_scale = obj.default_1d_conv_scale; %default convolution scale
-        else
-            obj.convolution_scale = convolution_sigma;
-        end
 
-        if nargin < 3
+        if nargin < 2
             obj.mean_vector = zeros(1, obj.nmb_longitudinal_points);
         else
             obj.mean_vector = mean_vector;
@@ -55,9 +49,9 @@ classdef class_gaussian_phase_sampling < class_physical_parameters
             nmb_of_samples = 1;
         end
         samples = mvnrnd(obj.mean_vector, obj.covariance_matrix, nmb_of_samples);
-        for i = 1:nmb_of_samples
-            samples(i,:) = obj.convolution_1d(samples(i,:));
-        end
+        %for i = 1:nmb_of_samples
+        %    samples(i,:) = obj.convolution_1d(samples(i,:));
+        %end
         obj.phase_profiles = samples;
         obj.nmb_sampled_profles = nmb_of_samples; 
     end
