@@ -4,9 +4,14 @@
 addpath('../classes')
 addpath('../input')
 load('EXAMPLE_phase_profile.mat')
+load('thermal_cov_100nk.mat')
+
+
+phase_sampling_suite = class_gaussian_phase_sampling(cov_phase);
+phase_profile_RS = phase_sampling_suite.generate_profiles();
 
 %initialize interference pattern class
-interference_suite = class_interference_pattern(phase_profile_RS);
+interference_suite = class_interference_pattern(phase_profile_RS, 15e-3, 1);
 
 %only phase input means the other variables are set to default
 %to change the default values, just add more argument. If athe second argument
@@ -27,28 +32,29 @@ interference_suite = class_interference_pattern(phase_profile_RS);
 rho_tof_trans = interference_suite.tof_transversal_expansion();
 
 %full expansion (transversal and longitudinal)
-rho_tof_full = interference_suite.tof_transversal_expansion();
+rho_tof_full = interference_suite.tof_full_expansion();
+normalized_rho_tof_full = interference_suite.normalize(rho_tof_full, 10^4);
 
 %convolving and adding noise to the full interference pattern
-processed_rho_tof_full = interference_suite.convolution2d(rho_tof_full);
+%processed_rho_tof_full = interference_suite.convolution2d(rho_tof_full);
 
-sigma_scale = 0.05; %this will set the standard deviation (std) of the noise, 
+%sigma_scale = 0.05; %this will set the standard deviation (std) of the noise, 
 % 0.05 means that the std is 5% of the maximum peak of the interference
 % pattern 
 
-processed_rho_tof_full = interference_suite.add_gaussian_noise(processed_rho_tof_full, sigma_scale);
+%processed_rho_tof_full = interference_suite.add_gaussian_noise(processed_rho_tof_full, sigma_scale);
 
 %showing the results
-subplot(1,3,1)
+subplot(1,2,1)
 imagesc(rho_tof_trans)
 colorbar
 
-subplot(1,3,2)
+subplot(1,2,2)
 imagesc(rho_tof_full)
 colorbar
 
-subplot(1,3,3)
-imagesc(processed_rho_tof_full)
-colorbar
+%subplot(1,3,3)
+%imagesc(processed_rho_tof_full)
+%colorbar
 
 colormap(gge_colormap)
