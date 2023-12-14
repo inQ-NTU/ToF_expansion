@@ -15,7 +15,7 @@ t_tof = 30e-3;
 flag_interaction_broadening = 1;
 
 %initialize interference pattern class
-interference_suite_with_broadening = class_interference_pattern(coarse_phase_profile, t_tof, flag_interaction_broadening);
+interference_suite_with_broadening = class_interference_pattern(coarse_phase_profile, t_tof, 'InverseParabola', flag_interaction_broadening);
 interference_suite = class_interference_pattern(coarse_phase_profile, t_tof);
 
 %generate rho tof
