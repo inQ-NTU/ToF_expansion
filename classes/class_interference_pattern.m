@@ -151,7 +151,7 @@ classdef class_interference_pattern< class_physical_parameters
             if obj.flag_interaction_broadening == 0
                 density_sigma_init = sqrt( obj.hbar/(obj.m*obj.omega) );
             else
-                density_sigma_init = sqrt( obj.hbar/(obj.m*obj.omega) )*sqrt(1+obj.scattering_length*obj.longitudinal_density(z));
+                density_sigma_init = sqrt( obj.hbar/(obj.m*obj.omega) )*(1+obj.scattering_length*obj.longitudinal_density(z))^(1/4);
             end
         end
 
