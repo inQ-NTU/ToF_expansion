@@ -6,23 +6,13 @@ close all
 %First (second) row of phase_profile_RS is interpreted to be relative (common) phase
 addpath('../../classes')
 addpath('../../input')
-addpath('../../artificial_imaging')
-addpath('../../artificial_imaging/necessary_functions')
-addpath('../../artificial_imaging/utility')
+addpath('../image processing')
 load('thermal_cov_60nk.mat')
 
 %Number of atoms
 condensate_length = 100e-6;
 t_tof = 15e-3;
 width_fit_flag = 1;
-
-%Imaging setup
-imaging_intensity   = 0.25*16.6933;         % use 25% of saturation intensity
-no_push_subdivisions= 20;                   % number of discretization steps in push simulation
-imaging_system      = 'VAndor';             % string specifying the imaging system being simulated
-shotnoise_flag      = true;                 % if true, account for photonic shotnoise
-recoil_flag         = true;                 % if true, account for photon emmision recoil
-shift_calibrate = 2400;                     %the calibration value when there is no absorption
 
 phase_sampling_suite = class_gaussian_phase_sampling(cov_phase);
 rel_phase = phase_sampling_suite.generate_profiles();
@@ -44,37 +34,10 @@ rho_tof_full_wc = interference_suite_wc.tof_full_expansion();
 
 %Making the image square for processing purpose
 z_res = size(rho_tof_full_woc, 1);
-x_res = size(rho_tof_full_woc, 2);
-Delta_res = x_res - z_res; 
 grid_dens = linspace(-condensate_length/2, condensate_length/2, z_res);
 
-rho_tof_full_woc = rho_tof_full_woc(:,Delta_res/2+1:x_res  - Delta_res/2);
-rho_tof_full_wc = rho_tof_full_wc(:,Delta_res/2+1:x_res  - Delta_res/2);
-
-
-%create artificial image
-img_rho_tof_woc = create_artificial_images(rho_tof_full_woc, ...
-                                 grid_dens, ...
-                                 cloud_widths, ... 
-                                 imaging_intensity, ... 
-                                 no_push_subdivisions, ...
-                                 imaging_system, ... 
-                                 shotnoise_flag, ... 
-                                 recoil_flag);
-
-img_rho_tof_wc = create_artificial_images(rho_tof_full_wc, ...
-                                 grid_dens, ...
-                                 cloud_widths, ... 
-                                 imaging_intensity, ... 
-                                 no_push_subdivisions, ...
-                                 imaging_system, ... 
-                                 shotnoise_flag, ... 
-                                 recoil_flag);
-
-
-%Calibrating and defining grids
-img_rho_tof_woc = shift_calibrate -img_rho_tof_woc;
-img_rho_tof_wc = shift_calibrate - img_rho_tof_wc;
+img_rho_tof_woc = absorption_imaging(rho_tof_full_woc, grid_dens, cloud_widths);
+img_rho_tof_wc = absorption_imaging(rho_tof_full_wc, grid_dens, cloud_widths);
 
 coarse_z_res = size(img_rho_tof_wc,1);
 condensate_length = 1e6*condensate_length;
@@ -155,7 +118,7 @@ xticks([-50,0,50])
 xticklabels([-50,0,50])
 xlabel('$z\; (\mu m)$','Interpreter','latex')
 ax = gca;
-ax.YAxis(2).Exponent = 3; 
+ax.YAxis(2).Exponent = 2; 
 title('$\mathbf{d}$','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[0.1,0.8])
 
 
@@ -172,9 +135,9 @@ ax = gca;
 ax.YAxis.Exponent = -1;
 
 axes(f(6))
-plot(fine_grid(3:end-2), width_woc_no_proc(3:end-2), 'Color', 'Blue')
+plot(fine_grid(5:end-5), width_woc_no_proc(5:end-5), 'Color', 'Blue')
 hold on
-plot(coarse_grid(3:end-2), width_woc(3:end-2),'Color', 'red')
+plot(coarse_grid(5:end-5), width_woc(5:end-5),'Color', 'red')
 xlabel('$z\; (\mu m)$', 'Interpreter', 'latex')
 ylabel('$\sigma \; (\mu m)$', 'Interpreter','latex')
 title('$\mathbf{f}$','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[0.1,0.8])
@@ -220,7 +183,7 @@ xticks([-50,0,50])
 xticklabels([-50,0,50])
 xlabel('$z\; (\rm \mu m)$','Interpreter','latex')
 ax = gca;
-ax.YAxis(2).Exponent = 3; 
+ax.YAxis(2).Exponent = 2; 
 title('$\mathbf{d}$','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[0.1,0.8])
 
 
@@ -235,9 +198,9 @@ ylim([0.4,1.1])
 ax = gca;
 ax.YAxis.Exponent = -1;
 axes(g(6))
-plot(fine_grid(3:end-2), width_wc_no_proc(3:end-2),'Color','blue')
+plot(fine_grid(5:end-5), width_wc_no_proc(5:end-5),'Color','blue')
 hold on
-plot(coarse_grid(3:end-2), width_wc(3:end-2),'Color', 'red')
+plot(coarse_grid(5:end-5), width_wc(5:end-5),'Color', 'red')
 xlabel('$z\; (\rm \mu m)$', 'Interpreter', 'latex')
 ylabel('$\sigma\; (\mu m)$', 'Interpreter', 'latex')
 title('$\mathbf{f}$','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[0.1,0.8])

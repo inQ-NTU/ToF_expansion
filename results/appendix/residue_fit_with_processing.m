@@ -3,20 +3,10 @@ clear all
 addpath('../../input')
 addpath('../../classes')
 load('thermal_cov_75nk.mat')
-addpath('../../artificial_imaging')
-addpath('../../artificial_imaging/necessary_functions')
-addpath('../../artificial_imaging/utility')
+addpath('../image processing')
 
 condensate_length = 100e-6;
-transversal_length = 120e-6; 
 width_fit_flag = 1;
-%Imaging setup
-%Imaging setup
-imaging_intensity   = 0.25*16.6933;         % use 25% of saturation intensity
-no_push_subdivisions= 20;                   % number of discretization steps in push simulation
-imaging_system      = 'VAndor';             % string specifying the imaging system being simulated
-shotnoise_flag      = true;                 % if true, account for photonic shotnoise
-recoil_flag         = true;                 % if true, account for photon emmision recoil
 
 %sampling suite is used only to coarse-grain (cg_rel_phase)-> inefficient
 sampling_suite = class_gaussian_phase_sampling(cov_phase);
@@ -46,15 +36,11 @@ rho_tof_trans = interference_suite_woc.tof_transversal_expansion();
 
 %Making the image square
 z_res = size(rho_tof_full_woc, 1);
-x_res = size(rho_tof_full_woc, 2);
-Delta_res = x_res - z_res; 
-
-rho_tof_trans = rho_tof_trans(:,Delta_res/2+1:x_res  - Delta_res/2);
-rho_tof_full_woc = rho_tof_full_woc(:,Delta_res/2+1:x_res  - Delta_res/2);
-rho_tof_full_wc = rho_tof_full_wc(:,Delta_res/2+1:x_res  - Delta_res/2);
 
 %artificial imaging
 grid_dens = z_grid*1e-6;
+img_rho_tof_trans = absorption_imaging(rho_tof_trans, grid_dens);
+
 img_rho_tof_trans = create_artificial_images(rho_tof_trans, ...
                                  grid_dens, ...
                                  cloud_widths, ... 
@@ -63,6 +49,7 @@ img_rho_tof_trans = create_artificial_images(rho_tof_trans, ...
                                  imaging_system, ... 
                                  shotnoise_flag, ... 
                                  recoil_flag);
+img_rho_tof_trans = 
 
 img_rho_tof_woc = create_artificial_images(rho_tof_full_woc, ...
                                  grid_dens, ...
