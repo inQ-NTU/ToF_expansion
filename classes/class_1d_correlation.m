@@ -146,8 +146,7 @@ classdef class_1d_correlation
             phase_profiles_data = obj.all_phase_profiles;
         end 
         %Compute fft for each profile
-        fourier_data = transpose(abs(fft(transpose(phase_profiles_data)))*(1/sqrt(size(phase_profiles_data,2))));
-        
+        fourier_data = transpose(abs(fft(transpose(phase_profiles_data)))*(1/size(phase_profiles_data,2)));
         %single sampling - remove frequency above Nyquist frequency
         l = size(fourier_data,2)/2+1;
         fourier_data = fourier_data(:,1:l);
