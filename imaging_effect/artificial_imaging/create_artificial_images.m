@@ -31,8 +31,8 @@ if strcmpi(imaging_system,'verticalAndor')|| strcmpi(imaging_system,'VAndor')
     camera_settings.background_cnts         = 1001;         % static background counts of camera
     camera_settings.alpha_fact              = 1;            % reduction of scattering cross-section from imaging light polarization
     camera_settings.numap                   = 0.079;        % numerical aperture
-    camera_settings.push_flag               = false;        % do not account for push in VAndor images
-    camera_settings.defocus_um              = 100;          % defocus in micrometers
+    camera_settings.push_flag               = true;         % account for push in VAndor images
+    camera_settings.defocus_um              = 32.7;            % defocus in micrometers (only taking into account the falling of the cloud)
     camera_settings.imaging_shift           = 0;            % number of pixels that shift on CCD during exposure
     camera_settings.shift_dir               = 1;            % direction that pixels shift in
     
