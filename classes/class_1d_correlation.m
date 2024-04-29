@@ -6,6 +6,7 @@ classdef class_1d_correlation
         all_phase_profiles
 
         %inferred
+        referenced_phase_profiles
         average_phase_profile
         longitudinal_resolution
         nmb_of_sampled_profiles
@@ -34,41 +35,53 @@ classdef class_1d_correlation
             end
             avg_phase_profile = (1/obj.nmb_of_sampled_profiles)*avg_phase_profile;
             obj.average_phase_profile = avg_phase_profile;
+        end
 
+        %Function to reference the phase profiles -> move to
+        %initialization rather than function                
+        function ref_phases = reference_phase_profiles(obj, phase_profiles_data)
+            if nargin < 2
+                phase_profiles_data = obj.all_phase_profiles;
+            end
+
+            ref_phases = zeros(size(phase_profiles_data));
+            for i = 1:obj.nmb_of_sampled_profiles
+                ref_phases(i,:) = phase_profiles_data(i,:) - phase_profiles_data(i, floor(obj.longitudinal_resolution/2));
+            end
+            obj.referenced_phase_profiles = ref_phases; 
         end
 
         %Function to compute fourth order correlation G(z1, z2, z3, z4) function for fixed z3
         %and z4
         function corr = fourth_order_corr(obj, z3_idx, z4_idx, phase_profiles_data)
             if nargin<4
-                phase_profiles_data = obj.all_phase_profiles;
+                phase_profiles_data = obj.referenced_phase_profiles;
             end
 
+            longitudinal_resolution = size(phase_profiles_data, 2);
+            nmb_of_sampled_profiles = size(phase_profiles_data, 1);
             %referencing the phase profiles
-            for i = 1:obj.nmb_of_sampled_profiles
-                phase_profiles_data(i,:) = phase_profiles_data(i,:) - phase_profiles_data(i,floor(obj.longitudinal_resolution/2)); 
-            end
+            %for i = 1:obj.nmb_of_sampled_profiles
+            %    phase_profiles_data(i,:) = phase_profiles_data(i,:) - phase_profiles_data(i,floor(obj.longitudinal_resolution/2)); 
+            %end
 
             %Computing the correlation
-            corr = zeros(obj.longitudinal_resolution, obj.longitudinal_resolution);
-            for i = 1:obj.longitudinal_resolution
-                for j = 1:obj.longitudinal_resolution
+            corr = zeros(longitudinal_resolution, longitudinal_resolution);
+            for i = 1:longitudinal_resolution
+                for j = 1:longitudinal_resolution
                     prod = 0;
-                    for k = 1:obj.nmb_of_sampled_profiles
+                    for k = 1:nmb_of_sampled_profiles
                         prod = prod + phase_profiles_data(k,i)*phase_profiles_data(k,j)*phase_profiles_data(k, z3_idx)*phase_profiles_data(k, z4_idx);
                     end
-                    prod = prod/obj.nmb_of_sampled_profiles;
+                    prod = prod/nmb_of_sampled_profiles;
                     corr(i,j) = prod;
                 end
             end
         end
-
-        %Function to compute third order correlation for fixed z3 and z4
         
 
-
-
-        %Function to compute correlation function of any order
+        %Function to compute correlation function of any order -> Can be
+        %very slow and time consuming
         function corr = correlation_func(obj, order, phase_profiles_data)
             if nargin<3
                 phase_profiles_data = obj.all_phase_profiles;
@@ -106,38 +119,62 @@ classdef class_1d_correlation
         %calculating covariance matrix
         cov_matrix = zeros(obj.longitudinal_resolution, obj.longitudinal_resolution);
         %averaging phi(z)phi(z') over all the samples
-        for i = 1:obj.nmb_of_sampled_profiles
+        for i = 1:size(phase_profiles_data, 1)
             for j = 1:obj.longitudinal_resolution
                 for k =1:obj.longitudinal_resolution
                         cov_matrix(j,k) = cov_matrix(j,k)+(phase_profiles_data(i,j)-obj.average_phase_profile(j))*(phase_profiles_data(i,k)-obj.average_phase_profile(k));
                 end
             end
         end
-        cov_matrix = (1/obj.nmb_of_sampled_profiles)*cov_matrix;
+        cov_matrix = (1/size(phase_profiles_data, 1))*cov_matrix;
         obj.cov_matrix = cov_matrix;
     end
 
+    %Full tensor disconnected correlation -> can be very slow for large
+    %dimension data
     function w4 = wick_four_point_correlation(obj, phase_profiles_data)
         if nargin < 2
             phase_profiles_data = obj.all_phase_profiles;
         end
-        %Compute two-point correlation function
-        g2 = obj.correlation_func(2, phase_profiles_data);
+
+        longitudinal_resolution = size(phase_profiles_data, 2);
+
+        %Extract covariance matrix -> one has to compute covariance matrix
+        %before computing w4
+        g2 = obj.cov_matrix; 
     
         %Initialize four-point correlation function as a 4-tensor
-        w4 = zeros(obj.longitudinal_resolution, obj.longitudinal_resolution, obj.longitudinal_resolution, obj.longitudinal_resolution);
+        w4 = zeros(longitudinal_resolution, longitudinal_resolution, longitudinal_resolution, longitudinal_resolution);
         
         %Loop begin - compute the wick decomposition
-        for i = 1:obj.longitudinal_resolution
-            for j = 1:obj.longitudinal_resolution
-                for k = 1:obj.longitudinal_resolution
-                    for l = 1:obj.longitudinal_resolution
+       
+        for i = 1:longitudinal_resolution
+            for j = 1:longitudinal_resolution
+                for k = 1:longitudinal_resolution
+                    for l = 1:longitudinal_resolution
                         w4(i,j,k,l) = g2(i,j)*g2(k,l)+g2(i,k)*g2(j,l)+g2(i,l)*g2(j,k);
                     end
                 end
             end
         end
         %Loop end
+    end
+
+
+    %function to compute g1 function
+    function g1 = g1_corr(obj, phase_profiles_data)
+        if nargin < 2
+            phase_profiles_data = obj.all_phase_profiles;
+        end
+        g1 = zeros(obj.longitudinal_resolution, obj.longitudinal_resolution);
+        for i = 1:obj.nmb_of_sampled_profiles
+            for j = 1:obj.longitudinal_resolution
+                for k = 1:obj.longitudinal_resolution
+                    g1(j,k) = g1(j,k)+(cos(phase_profiles_data(i,j) - phase_profiles_data(i,k)));
+                end
+            end
+        end
+        g1  = (1/obj.nmb_of_sampled_profiles)*g1;
     end
 
     %function to compute correlation in Fourier space
@@ -147,8 +184,9 @@ classdef class_1d_correlation
         end 
         %Compute fft for each profile
         fourier_data = transpose(abs(fft(transpose(phase_profiles_data)))*(1/size(phase_profiles_data,2)));
+        
         %single sampling - remove frequency above Nyquist frequency
-        l = size(fourier_data,2)/2+1;
+        l = floor(size(fourier_data,2)/2+1);
         fourier_data = fourier_data(:,1:l);
 
         %Compute correlation
