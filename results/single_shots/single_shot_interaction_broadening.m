@@ -6,7 +6,7 @@ close all
 %First (second) row of phase_profile_RS is interpreted to be relative (common) phase
 addpath('../../classes')
 addpath('../../input')
-load('thermal_cov_60nk.mat')
+load('thermal_cov_50nk.mat')
 
 %Number of atoms
 condensate_length = 100e-6;
@@ -19,8 +19,8 @@ rel_phase = phase_sampling_suite.generate_profiles();
 com_phase = phase_sampling_suite.generate_profiles();
 
 %initialize interference pattern class
-%woc = without common phase
-%wc = with common phase
+%wob = without broadening
+%wc = with broadening
 interference_suite_wob = class_interference_pattern([rel_phase; com_phase], t_tof);
 interference_suite_wb = class_interference_pattern([rel_phase; com_phase], t_tof, 'InverseParabola', width_fit_flag);
 
