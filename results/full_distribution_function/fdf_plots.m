@@ -3,7 +3,11 @@ close all
 
 addpath('../../input')
 
-load('integrated_contrast_short_length.mat')
+%wop - without processing
+%1 - 7 ms
+%2 - 15 ms
+%3 - 30 ms
+load('fdf_short_length_wop.mat')
 ic_in_1 = integrated_contrast_in;
 ic_trans_1 = integrated_contrast_trans;
 ic_woc_1_1 = integrated_contrast_woc_1;
@@ -15,7 +19,7 @@ ic_wc_3_1 = integrated_contrast_wc_3;
 ic_woc_2_wp_1 = integrated_contrast_woc_2_wp;
 ic_wc_2_wp_1 = integrated_contrast_wc_2_wp;
 
-load('integrated_contrast_medium_length.mat')
+load('fdf_medium_length_wop.mat')
 ic_in_2 = integrated_contrast_in;
 ic_trans_2 = integrated_contrast_trans;
 ic_woc_1_2 = integrated_contrast_woc_1;
@@ -27,7 +31,7 @@ ic_wc_3_2 = integrated_contrast_wc_3;
 ic_woc_2_wp_2 = integrated_contrast_woc_2_wp;
 ic_wc_2_wp_2 = integrated_contrast_wc_2_wp;
 
-load('integrated_contrast_long_length.mat')
+load('fdf_long_length_wop.mat')
 ic_in_3 = integrated_contrast_in;
 ic_trans_3 = integrated_contrast_trans;
 ic_woc_1_3 = integrated_contrast_woc_1;
