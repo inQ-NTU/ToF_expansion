@@ -15,6 +15,7 @@ interference_suite = class_interference_pattern(phase_profile, t_tof);
 %transversal expansion only
 rho_tof_trans_with_broadening = interference_suite_with_broadening.tof_transversal_expansion();
 rho_tof_trans = interference_suite.tof_transversal_expansion();
+rho_tof_trans_with_processing = absorption_imaging(rho_tof_trans);
 
 %full expansion (transversal and longitudinal)
 rho_tof_full_with_broadening = interference_suite_with_broadening.tof_full_expansion();

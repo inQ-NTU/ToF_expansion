@@ -6,25 +6,22 @@ close all
 
 addpath('../classes')
 addpath('../input')
-addpath('../artificial_imaging')
-addpath('../artificial_imaging/necessary_functions')
-addpath('../artificial_imaging/utility')
-load('thermal_cov_60nk.mat')
+addpath('../imaging_effect')
+addpath('../imaging_effect/utility')
+addpath('../imaging_effect/image_analysis')
+addpath('../imaging_effect/artificial_imaging')
+addpath('../imaging_effect/artificial_imaging/necessary_functions')
 
+load('thermal_cov_60nk.mat')
+z_res = size(cov_phase, 1);
 t_tof = 15e-3; 
 condensate_length = 100e-6; %100 microns gas
-
-%Imaging setup
-imaging_intensity   = 0.25*16.6933;         % use 25% of saturation intensity
-no_push_subdivisions= 20;                   % number of discretization steps in push simulation
-imaging_system      = 'VAndor';             % string specifying the imaging system being simulated
-shotnoise_flag      = true;                 % if true, account for photonic shotnoise
-recoil_flag         = true;                 % if true, account for photon emmision recoil
-shift_calibrate = 2400;
 
 phase_sampling_suite = class_gaussian_phase_sampling(cov_phase);
 rel_phase = phase_sampling_suite.generate_profiles();
 com_phase = phase_sampling_suite.generate_profiles();
+
+grid_dens = linspace(-condensate_length/2, condensate_length/2, z_res);     
 
 %initialize interference pattern class
 %woc = without common phase
@@ -35,49 +32,19 @@ interference_suite_wc = class_interference_pattern([rel_phase; com_phase], t_tof
 %initial width
 cloud_widths = interference_suite_woc.compute_density_sigma_t(0, t_tof);
 
+
 %transversal expansion
 rho_tof_trans = interference_suite_woc.tof_transversal_expansion();
 
 %full expansion (transversal and longitudinal)
 rho_tof_full_woc = interference_suite_woc.tof_full_expansion();
-
 rho_tof_full_wc = interference_suite_wc.tof_full_expansion();
 
-%Making the image square for processing purpose
-z_res = size(rho_tof_full_woc, 1);
-grid_dens = linspace(-condensate_length/2, condensate_length/2, z_res);
-
 %create artificial image
-img_rho_tof_trans = create_artificial_images(rho_tof_trans, ...
-                                 grid_dens, ...
-                                 cloud_widths, ... 
-                                 imaging_intensity, ... 
-                                 no_push_subdivisions, ...
-                                 imaging_system, ... 
-                                 shotnoise_flag, ... 
-                                 recoil_flag);
+img_rho_tof_trans = absorption_imaging(rho_tof_trans, grid_dens, cloud_widths);
+img_rho_tof_woc = absorption_imaging(rho_tof_full_woc, grid_dens, cloud_widths);
+img_rho_tof_wc = absorption_imaging(rho_tof_full_wc, grid_dens, cloud_widths);
 
-img_rho_tof_woc = create_artificial_images(rho_tof_full_woc, ...
-                                 grid_dens, ...
-                                 cloud_widths, ... 
-                                 imaging_intensity, ... 
-                                 no_push_subdivisions, ...
-                                 imaging_system, ... 
-                                 shotnoise_flag, ... 
-                                 recoil_flag);
-
-img_rho_tof_wc = create_artificial_images(rho_tof_full_wc, ...
-                                 grid_dens, ...
-                                 cloud_widths, ... 
-                                 imaging_intensity, ... 
-                                 no_push_subdivisions, ...
-                                 imaging_system, ... 
-                                 shotnoise_flag, ... 
-                                 recoil_flag);
-
-img_rho_tof_woc = shift_calibrate -img_rho_tof_woc;
-img_rho_tof_wc = shift_calibrate - img_rho_tof_wc;
-img_rho_tof_trans = shift_calibrate - img_rho_tof_trans;
 coarse_z_res = size(img_rho_tof_wc,1);
 
 condensate_length = 1e6*condensate_length;
@@ -86,7 +53,7 @@ coarse_grid = linspace(-condensate_length/2, condensate_length/2, coarse_z_res);
 
 figure
 f(1) = subplot(2,3,1);
-imagesc(fine_grid, fine_grid, rho_tof_trans')
+imagesc(fine_grid, fine_grid, rho_tof_trans') 
 colorbar
 
 f(2) = subplot(2,3,2);

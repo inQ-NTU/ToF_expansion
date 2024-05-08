@@ -8,12 +8,11 @@ phase_sampling_suite = class_gaussian_phase_sampling(cov_phase);
 
 relative_phase_profile = phase_sampling_suite.generate_profiles();
 common_phase_profile = phase_sampling_suite.generate_profiles();
-t_tof  = 10e-3; %10 ms expansion
-insitu_profile_str = 'InverseParabola'; %the shape of insitu profile, other options: flat, BoxDensity
+t_tof  = 12e-3; %12 ms expansion
+insitu_profile_str = 'InverseParabola'; %the shape of insitu profile, other options: Flat, BoxPotential
 
 %initialize interference pattern class
 interference_suite = class_interference_pattern([relative_phase_profile; common_phase_profile], t_tof, 'InverseParabola');
-
 
 %phase input consist of two rows: relative and common 
 %if only one row, it is interpreted as relative phase and common phase is

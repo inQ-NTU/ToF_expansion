@@ -32,7 +32,7 @@ init_phase = phase_extraction_suite.init_phase_guess();
 fitted_phase = phase_extraction_suite.fitting(init_phase);
 
 subplot(1,2,1)
-imagesc(rho_tof')
+imagesc(rho_tof)
 colorbar
 
 colormap(gge_colormap)
