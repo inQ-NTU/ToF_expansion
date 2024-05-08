@@ -162,19 +162,19 @@ classdef class_1d_correlation
 
 
     %function to compute g1 function
-    function g1 = g1_corr(obj, phase_profiles_data)
+    function g2 = g2_corr(obj, phase_profiles_data)
         if nargin < 2
             phase_profiles_data = obj.all_phase_profiles;
         end
-        g1 = zeros(obj.longitudinal_resolution, obj.longitudinal_resolution);
+        g2 = zeros(obj.longitudinal_resolution, obj.longitudinal_resolution);
         for i = 1:obj.nmb_of_sampled_profiles
             for j = 1:obj.longitudinal_resolution
                 for k = 1:obj.longitudinal_resolution
-                    g1(j,k) = g1(j,k)+(cos(phase_profiles_data(i,j) - phase_profiles_data(i,k)));
+                    g2(j,k) = g2(j,k)+(cos(phase_profiles_data(i,j) - phase_profiles_data(i,k)));
                 end
             end
         end
-        g1  = (1/obj.nmb_of_sampled_profiles)*g1;
+        g2  = (1/obj.nmb_of_sampled_profiles)*g2;
     end
 
     %function to compute correlation in Fourier space
