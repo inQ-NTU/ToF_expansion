@@ -1,5 +1,5 @@
-# ToF_expansion
-A minimal code to simulate interference pattern data acquisition and relative phase extraction of a two parallel one-dimensional Bose gas in time-of-flight experiments. In particular, this code takes into account longitudinal expansion and mixing with common degrees of freedom (see Ref. [1]). This code requires "Statistics and Machine Learning Toolbox" and "Optimization Toolbox". 
+# TOF_expansion
+This is a code used to simulate time-of-flight (TOF) interference pattern data acquisition and relative phase extraction of two parallel one-dimensional Bose gas experiments. In particular, this code takes into account longitudinal expansion and mixing with common degrees of freedom [1], which introduce a systematic shift to the readout phase as compared to the in situ relative phase [2]. This code requires "Statistics and Machine Learning Toolbox" and "Optimization Toolbox". 
 
 The directory is structured as follows: <br />
 ├── classes &emsp;&emsp;            # main classes  <br />
@@ -12,4 +12,5 @@ The structure of the classes is shown in the diagram below. The red vertical lin
 ![class_structure](classes/class_structure.png)
 
 ## References
-[1] van Nieuwkerk, Y. D., Schmiedmayer, J., & Essler, F. (2018). Projective phase measurements in one-dimensional Bose gases. SciPost Physics, 5(5), 046.
+[1] van Nieuwkerk, Y. D., Schmiedmayer, J., & Essler, F. (2018). Projective phase measurements in one-dimensional Bose gases. SciPost Physics, 5(5), 046.<br/>
+[2] Murtadho, T., Gluza, M., Arifa, K. Z., Erne, S., Schmiedmayer, J., & Ng, N. (2024). Systematic analysis of relative phase extraction in one-dimensional Bose gases interferometry. arXiv:2403.05528.
