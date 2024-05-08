@@ -1,6 +1,5 @@
 clear all
 close all
-addpath('../../classes')
 addpath('../../input')
 load('ext_phase_500samples_with_processing.mat')
 

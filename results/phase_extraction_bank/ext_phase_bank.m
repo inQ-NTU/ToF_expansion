@@ -2,6 +2,11 @@ clear all
 close all
 addpath('../../classes')
 addpath('../../input')
+addpath('../../imaging_effect')
+addpath('../../imaging_effect/utility')
+addpath('../../imaging_effect/image_analysis')
+addpath('../../imaging_effect/artificial_imaging')
+addpath('../../imaging_effect/artificial_imaging/necessary_functions')
 load('thermal_cov_75nk.mat')
 
 img_res = 52;
