@@ -41,9 +41,12 @@ rho_tof_full_woc = interference_suite_woc.tof_full_expansion();
 rho_tof_full_wc = interference_suite_wc.tof_full_expansion();
 
 %create artificial image
-img_rho_tof_trans = absorption_imaging(rho_tof_trans, grid_dens, cloud_widths);
-img_rho_tof_woc = absorption_imaging(rho_tof_full_woc, grid_dens, cloud_widths);
-img_rho_tof_wc = absorption_imaging(rho_tof_full_wc, grid_dens, cloud_widths);
+%The input has to be transposed (longitudinal = horizontal) before being passed to absorption imaging
+%function, otherwise the coherent transfer function is applied in the wrong
+%direction
+img_rho_tof_trans = absorption_imaging(rho_tof_trans', grid_dens, cloud_widths);
+img_rho_tof_woc = absorption_imaging(rho_tof_full_woc', grid_dens, cloud_widths);
+img_rho_tof_wc = absorption_imaging(rho_tof_full_wc', grid_dens, cloud_widths);
 
 coarse_z_res = size(img_rho_tof_wc,1);
 
@@ -53,15 +56,15 @@ coarse_grid = linspace(-condensate_length/2, condensate_length/2, coarse_z_res);
 
 figure
 f(1) = subplot(2,3,1);
-imagesc(fine_grid, fine_grid, rho_tof_trans') 
+imagesc(fine_grid, fine_grid, rho_tof_trans) 
 colorbar
 
 f(2) = subplot(2,3,2);
-imagesc(fine_grid, fine_grid, rho_tof_full_woc')
+imagesc(fine_grid, fine_grid, rho_tof_full_woc)
 colorbar
 
 f(3) = subplot(2,3,3);
-imagesc(fine_grid, fine_grid, rho_tof_full_wc')
+imagesc(fine_grid, fine_grid, rho_tof_full_wc)
 colorbar
 
 f(4) = subplot(2,3,4);
