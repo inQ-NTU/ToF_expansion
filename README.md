@@ -12,5 +12,5 @@ The structure of the classes is shown in the diagram below. The red vertical lin
 ![class_structure](classes/class_structure.png)
 
 ## References
-[1] van Nieuwkerk, Y. D., Schmiedmayer, J., & Essler, F. (2018). Projective phase measurements in one-dimensional Bose gases. SciPost Physics, 5(5), 046.
+[1] van Nieuwkerk, Y. D., Schmiedmayer, J., & Essler, F. (2018). Projective phase measurements in one-dimensional Bose gases. SciPost Physics, 5(5), 046.<br/>
 [2] Murtadho, T., Gluza, M., Arifa, K. Z., Erne, S., Schmiedmayer, J., & Ng, N. (2024). Systematic analysis of relative phase extraction in one-dimensional Bose gases interferometry. arXiv:2403.05528.
