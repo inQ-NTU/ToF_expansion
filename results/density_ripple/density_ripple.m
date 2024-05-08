@@ -5,7 +5,7 @@ addpath('../../classes')
 
 load('thermal_cov_75nk.mat')
 condensate_length = 100e-6;
-transversal_length = 120e-6; 
+transversal_length = 100e-6; 
 sampling_suite = class_gaussian_phase_sampling(cov_phase);
 longitudinal_resolution = size(cov_phase,1);
 transversal_resolution = (transversal_length/condensate_length)*longitudinal_resolution;
