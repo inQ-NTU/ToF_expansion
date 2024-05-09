@@ -6,7 +6,7 @@ The directory is structured as follows: <br />
 ├── examples &emsp; &emsp;&ensp;   &emsp;&emsp; &emsp;&ensp;             # minimal examples <br />
 ├── results  &emsp;&emsp;&nbsp;&emsp;&ensp; &emsp;&emsp;&emsp;&emsp;     # more complex use cases for generating results in the paper <br />
 ├── input     &emsp;&ensp;&emsp;&nbsp;&emsp;&ensp;&emsp;&ensp; &emsp;&ensp; &emsp;# input files needed for examples and results <br />
-├── imaging_effect    &emsp;&ensp;&emsp;&nbsp; &emsp;# Code for simulating experimental imaging system <br />
+├── imaging_effect    &emsp;&ensp;&emsp;&nbsp; &emsp;# code for simulating experimental imaging system <br />
 └── README.md <br />
 
 The structure of the classes is shown in the diagram below. The red vertical lines represent inheritance and the blue lines represent simulation workflow.  <br/>
