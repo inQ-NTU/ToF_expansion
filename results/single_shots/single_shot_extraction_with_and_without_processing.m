@@ -7,6 +7,10 @@ close all
 addpath('../../classes')
 addpath('../../input')
 addpath('../../imaging_effect')
+addpath('../../imaging_effect/utility')
+addpath('../../imaging_effect/image_analysis')
+addpath('../../imaging_effect/artificial_imaging')
+addpath('../../imaging_effect/artificial_imaging/necessary_functions')
 load('thermal_cov_60nk.mat')
 
 %Number of atoms
