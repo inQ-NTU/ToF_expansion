@@ -1,0 +1,30 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: ToF_expansion
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - family-names: Murtadho
+    given-names: Taufiq
+    email: fiqmurtadho@gmail.com
+    affiliation: Nanyang Technological University
+    orcid: 'https://orcid.org/0000-0003-0324-8119'
+  - given-names: 'Marek '
+    family-names: Gluza
+    affiliation: Nanyang Technological University
+  - given-names: Arifa
+    family-names: Khatee Zathul
+    affiliation: Nanyang Technological University
+identifiers:
+  - type: url
+    value: 'https://arxiv.org/abs/2403.05528'
+repository-code: 'https://github.com/inQ-NTU/ToF_expansion'
+abstract: >-
+  This is a code used to simulate time-of-flight (TOF)
+  interference pattern data acquisition and relative phase
+  extraction of two parallel one-dimensional Bose gas
+  experiments.
