@@ -5,6 +5,7 @@ addpath('../../classes')
 
 %Define condensate length, pixel width, and grid
 condensate_length = 100e-6;
+l= condensate_length*1e6;
 pixel_width = 1e-6;
 pixnumz = floor(condensate_length/pixel_width);
 z_grid = linspace(-condensate_length/2,condensate_length/2, pixnumz).*1e6;
@@ -14,51 +15,68 @@ n_rel = 4;
 n_com = 6;
 rel_phase = pi*cos(n_rel*pi*z_grid/(condensate_length.*1e6));
 com_phase = pi*cos(n_com*pi*z_grid/(condensate_length.*1e6));
+phase_1 = (com_phase - rel_phase)/2;
+phase_2 = (com_phase + rel_phase)/2;
 
-%Run tof for 7 ms and 15 ms
+%Define mean density
+rho_max = 75e6;
+mean_density = rho_max*(1-(4/l^2).*z_grid.^2);
+
+%TOF Simulation
+%Set expansion times
 t_tof_1 = 7e-3;
 t_tof_2 = 15e-3;
 
-%woc - without common phase, wc - with common phase
-interference_suite_woc_1 = class_interference_pattern(rel_phase, t_tof_1);
-interference_suite_woc_2 = class_interference_pattern(rel_phase, t_tof_2);
-interference_suite_wc_1 = class_interference_pattern([rel_phase; com_phase], t_tof_1);
-interference_suite_wc_2 = class_interference_pattern([rel_phase; com_phase], t_tof_2);
+%Initializing interference pattern classes
+interference_suite_wc_1 = class_interference_pattern_update([phase_1; phase_2], [mean_density; mean_density], t_tof_1);
+interference_suite_wc_2 = class_interference_pattern_update([phase_1; phase_2], [mean_density; mean_density], t_tof_2);
+interference_suite_woc_1 = class_interference_pattern_update([-rel_phase/2; rel_phase/2], [mean_density; mean_density], t_tof_1);
+interference_suite_woc_2 = class_interference_pattern_update([-rel_phase/2; rel_phase/2], [mean_density; mean_density], t_tof_2);
 
+%Simulating TOF
 rho_tof_wc_1 = interference_suite_wc_1.tof_full_expansion();
-
 rho_tof_wc_2 = interference_suite_wc_2.tof_full_expansion();
-
 rho_tof_woc_1 = interference_suite_woc_1.tof_full_expansion();
-
 rho_tof_woc_2 = interference_suite_woc_2.tof_full_expansion();
 
-%phase extraction process
-phase_ext_suite_woc_1 = class_phase_extraction(rho_tof_woc_1, t_tof_1);
-phase_ext_suite_woc_2 = class_phase_extraction(rho_tof_woc_2, t_tof_2);
+%Phase extraction process
 phase_ext_suite_wc_1 = class_phase_extraction(rho_tof_wc_1, t_tof_1);
 phase_ext_suite_wc_2 = class_phase_extraction(rho_tof_wc_2, t_tof_2);
 
-ext_phase_woc_1 = phase_ext_suite_woc_1.fitting(phase_ext_suite_woc_1.init_phase_guess());
-ext_phase_woc_2 = phase_ext_suite_woc_2.fitting(phase_ext_suite_woc_2.init_phase_guess());
+phase_ext_suite_woc_1 = class_phase_extraction(rho_tof_woc_1, t_tof_1);
+phase_ext_suite_woc_2 = class_phase_extraction(rho_tof_woc_2, t_tof_2);
 
 ext_phase_wc_1 = phase_ext_suite_wc_1.fitting(phase_ext_suite_wc_1.init_phase_guess());
 ext_phase_wc_2 = phase_ext_suite_wc_2.fitting(phase_ext_suite_wc_2.init_phase_guess());
 
+ext_phase_woc_1 = phase_ext_suite_woc_1.fitting(phase_ext_suite_woc_1.init_phase_guess());
+ext_phase_woc_2 = phase_ext_suite_woc_2.fitting(phase_ext_suite_woc_2.init_phase_guess());
+
+%Calculating residues
+residue_1_wc = rel_phase-ext_phase_wc_1;
+residue_2_wc = rel_phase-ext_phase_wc_2;
+residue_1_woc = rel_phase-ext_phase_woc_1;
+residue_2_woc = rel_phase-ext_phase_woc_2;
+
+%Some fundamental parameters
+hbar = interference_suite_wc_1.hbar;
+m = interference_suite_wc_1.m;
+
+%Calculating expansion length scale
+lt_1 = sqrt(hbar*t_tof_1/(2*m));
+lt_2 = sqrt(hbar*t_tof_2/(2*m));
+
 %Fitting residue
 l= condensate_length*1e6;
-residue_1_wc = ext_phase_wc_1 - rel_phase;
-residue_2_wc = ext_phase_wc_2 - rel_phase;
-residue_1_woc = ext_phase_woc_1 - rel_phase;
-residue_2_woc = ext_phase_woc_2 - rel_phase;
-fitfun_wc = fittype(@(a,x) a*sin((n_rel*pi/l).*x).*sin((n_com*pi/l).*x));
-fitfun_woc = fittype(@(a,x) a*cos((n_rel*pi/l).*x).*(sin((n_rel*pi/l).*x)).^2);
 
-x0 = 0.1; 
-fit_wc_1 = fit(z_grid', residue_1_wc', fitfun_wc,'StartPoint', x0);
-fit_wc_2 = fit(z_grid', residue_2_wc', fitfun_wc, 'StartPoint',x0);
-fit_woc_1 = fit(z_grid', residue_1_woc', fitfun_woc,'StartPoint', x0);
-fit_woc_2 = fit(z_grid', residue_2_woc', fitfun_woc, 'StartPoint',x0);
+%Calculating exact correction formula
+deta2 = pixel_width/lt_2;
+deta1 = pixel_width/lt_1;
+correction_wc_1 = gradient(rel_phase, deta1).*gradient(com_phase, deta1);
+correction_wc_2 = gradient(rel_phase, deta2).*gradient(com_phase, deta2);
+
+correction_woc_1 = -0.5*gradient(rel_phase, deta1).^2.*(gradient(gradient(rel_phase, deta1), deta1));
+correction_woc_2 = -0.5*((gradient(rel_phase, deta2)).^2).*(gradient(gradient(rel_phase, deta2), deta2));
 
 %plotting
 figure
@@ -77,12 +95,11 @@ xticks([])
 yticklabels({'-\pi', '-\pi/2', '0', '\pi/2', '\pi'})
 
 axes(f(2))
-fine_grid = linspace(-l/2, l/2);
 plot(z_grid, residue_1_wc, 'o', 'Color', 'Blue', 'MarkerSize', 3);
 hold on
 plot(z_grid, residue_2_wc, 'x','Color', 'Red', 'MarkerSize', 4);
-plot(fine_grid, fit_wc_1(fine_grid),'Color','Blue')
-plot(fine_grid, fit_wc_2(fine_grid), 'Color', 'red')
+plot(z_grid, correction_wc_1,'Color','Blue')
+plot(z_grid, correction_wc_2, 'Color', 'red')
 ylim([-1.5,1.5])
 yticks([-1,0,1])
 title('$\mathbf{b}$','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[0.1,0.8])
@@ -106,10 +123,12 @@ axes(f(4))
 fine_grid = linspace(-l/2, l/2);
 plot(z_grid, residue_1_woc, 'o', 'Color', 'Blue', 'MarkerSize', 3);
 hold on
-plot(fine_grid, fit_woc_1(fine_grid),'Color','Blue')
+plot(z_grid, correction_woc_1,'Color','Blue')
 plot(z_grid, residue_2_woc, 'x','Color', 'Red', 'MarkerSize', 4);
-plot(fine_grid, fit_woc_2(fine_grid), 'Color', 'red')
-ylabel('$\Delta\phi_{-}(z)$','Interpreter','latex');
+plot(z_grid, correction_woc_2, 'Color', 'red')
+ylb = ylabel('$\Delta\phi_{-}(z)$','Interpreter','latex');
+ylb.Position(1) = ylb.Position(1) + 8;
+ylb.Position(2) = ylb.Position(2) - ;
 title('$\mathbf{d}$','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex','Position',[0.1,0.8])
 yticks([-0.1,0,0.1])
 ylim([-0.1,0.1])

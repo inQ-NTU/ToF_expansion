@@ -133,70 +133,70 @@ for i = 1:img_res/2
     mean_fourier_amp_input_60nk(i) = mean(fourier_amp_in(:,i));
     mean_fourier_amp_trans_60nk(i) = mean(fourier_amp_trans(:,i));
 end
-%k = 2*pi*(1:momentum_cutoff-1)/100;
-n = (1:momentum_cutoff-1);
+k = 2*pi*(1:momentum_cutoff-1)/100;
+%n = (1:momentum_cutoff-1);
 fitfun = fittype(@(c,x) c./(x.^2));
 
 %Fitting 25nk
-fit_curve_woc_1_25nk = fit(n', mean_fourier_amp_woc_1_25nk(2:end)',fitfun);
-fit_curve_woc_2_25nk = fit(n', mean_fourier_amp_woc_2_25nk(2:end)',fitfun);
-fit_curve_woc_3_25nk = fit(n', mean_fourier_amp_woc_3_25nk(2:end)',fitfun);
+fit_curve_woc_1_25nk = fit(k', mean_fourier_amp_woc_1_25nk(2:end)',fitfun);
+fit_curve_woc_2_25nk = fit(k', mean_fourier_amp_woc_2_25nk(2:end)',fitfun);
+fit_curve_woc_3_25nk = fit(k', mean_fourier_amp_woc_3_25nk(2:end)',fitfun);
 
-fit_curve_wc_1_25nk = fit(n', mean_fourier_amp_wc_1_25nk(2:end)',fitfun);
-fit_curve_wc_2_25nk = fit(n', mean_fourier_amp_wc_2_25nk(2:end)',fitfun);
-fit_curve_wc_3_25nk = fit(n', mean_fourier_amp_wc_3_25nk(2:end)',fitfun);
+fit_curve_wc_1_25nk = fit(k', mean_fourier_amp_wc_1_25nk(2:end)',fitfun);
+fit_curve_wc_2_25nk = fit(k', mean_fourier_amp_wc_2_25nk(2:end)',fitfun);
+fit_curve_wc_3_25nk = fit(k', mean_fourier_amp_wc_3_25nk(2:end)',fitfun);
 
-fit_curve_trans_25nk = fit(n', mean_fourier_amp_trans_25nk(2:end)', fitfun);
-fit_curve_input_25nk = fit(n', mean_fourier_amp_input_25nk(2:end)', fitfun);
-
-%Fitting 50nk
-fit_curve_woc_1_35nk = fit(n', mean_fourier_amp_woc_1_35nk(2:end)',fitfun);
-fit_curve_woc_2_35nk = fit(n', mean_fourier_amp_woc_2_35nk(2:end)',fitfun);
-fit_curve_woc_3_35nk = fit(n', mean_fourier_amp_woc_3_35nk(2:end)',fitfun);
-
-fit_curve_wc_1_35nk = fit(n', mean_fourier_amp_wc_1_35nk(2:end)',fitfun);
-fit_curve_wc_2_35nk = fit(n', mean_fourier_amp_wc_2_35nk(2:end)',fitfun);
-fit_curve_wc_3_35nk = fit(n', mean_fourier_amp_wc_3_35nk(2:end)',fitfun);
-
-fit_curve_trans_35nk = fit(n', mean_fourier_amp_trans_35nk(2:end)', fitfun);
-fit_curve_input_35nk = fit(n', mean_fourier_amp_input_35nk(2:end)', fitfun);
-
+fit_curve_trans_25nk = fit(k', mean_fourier_amp_trans_25nk(2:end)', fitfun);
+fit_curve_input_25nk = fit(k', mean_fourier_amp_input_25nk(2:end)', fitfun);
 
 %Fitting 50nk
-fit_curve_woc_1_50nk = fit(n', mean_fourier_amp_woc_1_50nk(2:end)',fitfun);
-fit_curve_woc_2_50nk = fit(n', mean_fourier_amp_woc_2_50nk(2:end)',fitfun);
-fit_curve_woc_3_50nk = fit(n', mean_fourier_amp_woc_3_50nk(2:end)',fitfun);
+fit_curve_woc_1_35nk = fit(k', mean_fourier_amp_woc_1_35nk(2:end)',fitfun);
+fit_curve_woc_2_35nk = fit(k', mean_fourier_amp_woc_2_35nk(2:end)',fitfun);
+fit_curve_woc_3_35nk = fit(k', mean_fourier_amp_woc_3_35nk(2:end)',fitfun);
 
-fit_curve_wc_1_50nk = fit(n', mean_fourier_amp_wc_1_50nk(2:end)',fitfun);
-fit_curve_wc_2_50nk = fit(n', mean_fourier_amp_wc_2_50nk(2:end)',fitfun);
-fit_curve_wc_3_50nk = fit(n', mean_fourier_amp_wc_3_50nk(2:end)',fitfun);
+fit_curve_wc_1_35nk = fit(k', mean_fourier_amp_wc_1_35nk(2:end)',fitfun);
+fit_curve_wc_2_35nk = fit(k', mean_fourier_amp_wc_2_35nk(2:end)',fitfun);
+fit_curve_wc_3_35nk = fit(k', mean_fourier_amp_wc_3_35nk(2:end)',fitfun);
 
-fit_curve_trans_50nk = fit(n', mean_fourier_amp_trans_50nk(2:end)', fitfun);
-fit_curve_input_50nk = fit(n', mean_fourier_amp_input_50nk(2:end)', fitfun);
+fit_curve_trans_35nk = fit(k', mean_fourier_amp_trans_35nk(2:end)', fitfun);
+fit_curve_input_35nk = fit(k', mean_fourier_amp_input_35nk(2:end)', fitfun);
+
+
+%Fitting 50nk
+fit_curve_woc_1_50nk = fit(k', mean_fourier_amp_woc_1_50nk(2:end)',fitfun);
+fit_curve_woc_2_50nk = fit(k', mean_fourier_amp_woc_2_50nk(2:end)',fitfun);
+fit_curve_woc_3_50nk = fit(k', mean_fourier_amp_woc_3_50nk(2:end)',fitfun);
+
+fit_curve_wc_1_50nk = fit(k', mean_fourier_amp_wc_1_50nk(2:end)',fitfun);
+fit_curve_wc_2_50nk = fit(k', mean_fourier_amp_wc_2_50nk(2:end)',fitfun);
+fit_curve_wc_3_50nk = fit(k', mean_fourier_amp_wc_3_50nk(2:end)',fitfun);
+
+fit_curve_trans_50nk = fit(k', mean_fourier_amp_trans_50nk(2:end)', fitfun);
+fit_curve_input_50nk = fit(k', mean_fourier_amp_input_50nk(2:end)', fitfun);
 
 %Fitting 75nk
-fit_curve_woc_1_75nk = fit(n', mean_fourier_amp_woc_1_75nk(2:end)',fitfun);
-fit_curve_woc_2_75nk = fit(n', mean_fourier_amp_woc_2_75nk(2:end)',fitfun);
-fit_curve_woc_3_75nk = fit(n', mean_fourier_amp_woc_3_75nk(2:end)',fitfun);
+fit_curve_woc_1_75nk = fit(k', mean_fourier_amp_woc_1_75nk(2:end)',fitfun);
+fit_curve_woc_2_75nk = fit(k', mean_fourier_amp_woc_2_75nk(2:end)',fitfun);
+fit_curve_woc_3_75nk = fit(k', mean_fourier_amp_woc_3_75nk(2:end)',fitfun);
 
-fit_curve_wc_1_75nk = fit(n', mean_fourier_amp_wc_1_75nk(2:end)',fitfun);
-fit_curve_wc_2_75nk = fit(n', mean_fourier_amp_wc_2_75nk(2:end)',fitfun);
-fit_curve_wc_3_75nk = fit(n', mean_fourier_amp_wc_3_75nk(2:end)',fitfun);
+fit_curve_wc_1_75nk = fit(k', mean_fourier_amp_wc_1_75nk(2:end)',fitfun);
+fit_curve_wc_2_75nk = fit(k', mean_fourier_amp_wc_2_75nk(2:end)',fitfun);
+fit_curve_wc_3_75nk = fit(k', mean_fourier_amp_wc_3_75nk(2:end)',fitfun);
 
-fit_curve_trans_75nk = fit(n', mean_fourier_amp_trans_75nk(2:end)', fitfun);
-fit_curve_input_75nk = fit(n', mean_fourier_amp_input_75nk(2:end)', fitfun);
+fit_curve_trans_75nk = fit(k', mean_fourier_amp_trans_75nk(2:end)', fitfun);
+fit_curve_input_75nk = fit(k', mean_fourier_amp_input_75nk(2:end)', fitfun);
 
 %Fitting 60 nK
-fit_curve_woc_1_60nk = fit(n', mean_fourier_amp_woc_1_60nk(2:end)',fitfun);
-fit_curve_woc_2_60nk = fit(n', mean_fourier_amp_woc_2_60nk(2:end)',fitfun);
-fit_curve_woc_3_60nk = fit(n', mean_fourier_amp_woc_3_60nk(2:end)',fitfun);
+fit_curve_woc_1_60nk = fit(k', mean_fourier_amp_woc_1_60nk(2:end)',fitfun);
+fit_curve_woc_2_60nk = fit(k', mean_fourier_amp_woc_2_60nk(2:end)',fitfun);
+fit_curve_woc_3_60nk = fit(k', mean_fourier_amp_woc_3_60nk(2:end)',fitfun);
 
-fit_curve_wc_1_60nk = fit(n', mean_fourier_amp_wc_1_60nk(2:end)',fitfun);
-fit_curve_wc_2_60nk = fit(n', mean_fourier_amp_wc_2_60nk(2:end)',fitfun);
-fit_curve_wc_3_60nk = fit(n', mean_fourier_amp_wc_3_60nk(2:end)',fitfun);
+fit_curve_wc_1_60nk = fit(k', mean_fourier_amp_wc_1_60nk(2:end)',fitfun);
+fit_curve_wc_2_60nk = fit(k', mean_fourier_amp_wc_2_60nk(2:end)',fitfun);
+fit_curve_wc_3_60nk = fit(k', mean_fourier_amp_wc_3_60nk(2:end)',fitfun);
 
-fit_curve_trans_60nk = fit(n', mean_fourier_amp_trans_60nk(2:end)', fitfun);
-fit_curve_input_60nk = fit(n', mean_fourier_amp_input_60nk(2:end)', fitfun);
+fit_curve_trans_60nk = fit(k', mean_fourier_amp_trans_60nk(2:end)', fitfun);
+fit_curve_input_60nk = fit(k', mean_fourier_amp_input_60nk(2:end)', fitfun);
 
 
 %Extracting the fit coefficients
@@ -231,104 +231,117 @@ fourier_amp_in = mean(fourier_amp_in_stats);
 
 %Plotting
 figure
-f = tight_subplot(2,3,[.07 .06],[.15 .1],[.1 .05]);
+f = tight_subplot(2,3,[.07 .1],[.15 .1],[.1 .05]);
 
 axes(f(1))
-plot(t_tof, fourier_amp_woc*1e-4, '*--','Color', 'Black')
-yline(fourier_amp_in*1e-4, '-','Color','Black')
+plot(t_tof, fourier_amp_woc*1e-2, '*--','Color', 'Black')
+yline(fourier_amp_in*1e-2, '-','Color','Black')
 xticks([])
-ylabel('\langle |\Phi_k|^2\rangle')
+ylabel('$\langle |\Phi_q|^2\rangle\; (\rm \mu m)$' , 'Interpreter','latex')
 title('\textbf{a}','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex', 'Position',[0.1,0.8])
-ylim([0,1]*1e-2)
-ax = gca;
-ax.YAxis.Exponent = -2;
+ylim([0,1])
+yticks([0,0.5,1])
+%ax = gca;
+%ax.YAxis.Exponent = -2;
 
 
 axes(f(2))
-n = n(4:end);
+k = k(4:end);
 
-plot(n, mean_fourier_amp_input_50nk(5:end),'Color','Black')
+plot(k, mean_fourier_amp_input_50nk(5:end)*1e2,'Color','Black')
 hold on
-plot(n, mean_fourier_amp_woc_1_50nk(5:end), 'o-','Color', 'Blue','MarkerSize',3)
-plot(n, mean_fourier_amp_woc_2_50nk(5:end), 'x-', 'Color', 'Red','MarkerSize',3)
-plot(n, mean_fourier_amp_woc_3_50nk(5:end), '^-', 'Color', [0,0.7, 0], 'MarkerSize', 3)
-plot(n, mean_fourier_amp_trans_50nk(5:end), '.', 'Color','Black')
-%xlim([0,1.5])
+plot(k, mean_fourier_amp_woc_1_50nk(5:end)*1e2, 'o-','Color', 'Blue','MarkerSize',3)
+plot(k, mean_fourier_amp_woc_2_50nk(5:end)*1e2, 'x-', 'Color', 'Red','MarkerSize',3)
+plot(k, mean_fourier_amp_woc_3_50nk(5:end)*1e2, '^-', 'Color', [0,0.7, 0], 'MarkerSize', 3)
+plot(k, mean_fourier_amp_trans_50nk(5:end)*1e2, '.', 'Color','Black')
+xlim([0,1.5])
 xticks([])
-ax = gca;
-ax.YAxis.Exponent= -2;
-ylim([0,4.3]*1e-2)
+ylabel('$\langle |\Phi_q|^2\rangle\; (\rm \mu m)$' , 'Interpreter','latex')
+%ax = gca;
+%ax.YAxis.Exponent= -2;
+%ylim([0,4.3]*1e-2)
 title('\textbf{b}','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex', 'Position',[0.1,0.8])
 
-g(1) = axes('Position',[.54 .69 .08 .1]);
+g(1) = axes('Position',[.54 .69 .08 .14]);
 box on
-plot(n, Delta_k_woc_1, 'o-', 'MarkerSize',2,'Color','Blue')
+plot(k, Delta_k_woc_1*1e2, 'o-', 'MarkerSize',2,'Color','Blue')
 hold on
-plot(n, Delta_k_woc_2,'x-','MarkerSize', 2, 'Color','Red')
-plot(n, Delta_k_woc_3, '^-', 'MarkerSize', 2, 'Color', [0,0.7,0])
+plot(k, Delta_k_woc_2*1e2,'x-','MarkerSize', 2, 'Color','Red')
+plot(k, Delta_k_woc_3*1e2, '^-', 'MarkerSize', 2, 'Color', [0,0.7,0])
+ylim([-0.2,1])
+yline(0)
 %xlim([0,1.5])
-ax = gca;
-ax.YAxis.Exponent = -2;
+%ax = gca;
+%ax.YAxis.Exponent = -2;
 
 
 axes(f(3))
-plot(temp_list, coeff_trans, '.','Color','Black')
+plot(temp_list, coeff_trans*1e2, '.','Color','Black')
 hold on
-plot(temp_list, coeff_woc_1,'o','Color','Blue')
-plot(temp_list, coeff_woc_2, 'x', 'Color', 'Red')
-plot(temp_list, coeff_woc_3, '^', 'Color', [0,0.7,0]);
-plot(temp_list, input_fit(temp_list),'Color','Black')
-ylim([0.5,2.5]*1e-3)
+plot(temp_list, coeff_woc_1*1e2,'o','Color','Blue')
+plot(temp_list, coeff_woc_2*1e2, 'x', 'Color', 'Red')
+plot(temp_list, coeff_woc_3*1e2, '^', 'Color', [0,0.7,0]);
+plot(temp_list, input_fit(temp_list)*1e2,'Color','Black')
+%ylim([0.5,2.5]*1e-3)
+ax = gca;
+ax.YAxis.Exponent = -1;
 xticks([])
-yticks([0,1,2]*1e-3)
-ylabel('$\alpha_T$','Interpreter','latex')
+%yticks([0,1,2]*1e-3)
+ylabel('$\alpha_{T_-}\; (\mu m^{-1})$','Interpreter','latex')
 title('\textbf{c}','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex', 'Position',[0.1,0.8])
 
 axes(f(4))
-plot(t_tof, fourier_amp_wc*1e-4, '*--','Color','Black')
-yline(fourier_amp_in*1e-4, '-','Color','Black')
+plot(t_tof, fourier_amp_wc*1e-2, '*--','Color','Black')
+yline(fourier_amp_in*1e-2, '-','Color','Black')
 xlabel('$t\; (\rm ms)$','Interpreter', 'latex')
-ylabel('\langle |\Phi_{k}|^2\rangle')
 title('\textbf{d}','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex', 'Position',[0.1,0.8])
-ylim([0,1]*1e-2)
-ax = gca;
-ax.YAxis.Exponent = -2;
+ylim([0,1])
+yticks([0,0.5,1])
+ylabel('$\langle |\Phi_q|^2\rangle\; (\rm \mu m)$' , 'Interpreter','latex')
+%ylim([0,1]*1e-2)
+%ax = gca;
+%ax.YAxis.Exponent = -2;
 
 
 axes(f(5))
-plot(n,mean_fourier_amp_input_50nk(5:end),'Color','Black')
+plot(k,mean_fourier_amp_input_50nk(5:end)*1e2,'Color','Black')
 hold on
-plot(n,mean_fourier_amp_wc_1_50nk(5:end), 'o-','Color','Blue', 'MarkerSize', 3)
-plot(n,mean_fourier_amp_wc_2_50nk(5:end), 'x-', 'Color', 'Red', 'MarkerSize',3)
-plot(n,mean_fourier_amp_wc_3_50nk(5:end), '^-','Color', [0,0.7,0], 'MarkerSize',3)
-plot(n,mean_fourier_amp_trans_50nk(5:end), '.', 'Color','Black')
-%xlim([0,1.5])
-ax = gca;
-ax.YAxis.Exponent = -2;
-ylim([0,4.3]*1e-2)
-xlabel('$k\; (\rm \mu m^{-1})$', 'Interpreter','latex')
+plot(k,mean_fourier_amp_wc_1_50nk(5:end)*1e2, 'o-','Color','Blue', 'MarkerSize', 3)
+plot(k,mean_fourier_amp_wc_2_50nk(5:end)*1e2, 'x-', 'Color', 'Red', 'MarkerSize',3)
+plot(k,mean_fourier_amp_wc_3_50nk(5:end)*1e2, '^-','Color', [0,0.7,0], 'MarkerSize',3)
+plot(k,mean_fourier_amp_trans_50nk(5:end)*1e2, '.', 'Color','Black')
+xlim([0,1.5])
+%ax = gca;
+%ax.YAxis.Exponent = -2;
+%ylim([0,4.3]*1e-2)
+xlabel('$q\; (\rm \mu m^{-1})$', 'Interpreter','latex')
 title('\textbf{e}','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex', 'Position',[0.1,0.8])
+ylabel('$\langle |\Phi_q|^2\rangle\; (\rm \mu m)$' , 'Interpreter','latex')
 
-g(2) = axes('Position',[.54 .3 .08 .1]);
+g(2) = axes('Position',[.54 .3 .08 .14]);
 box on
-plot(n, Delta_k_wc_1, 'o-', 'MarkerSize',2,'Color','Blue')
+plot(k, Delta_k_wc_1*1e2, 'o-', 'MarkerSize',2,'Color','Blue')
 hold on
-plot(n, Delta_k_wc_2,'x-','MarkerSize', 2, 'Color','Red')
-plot(n, Delta_k_wc_3, '^-', 'MarkerSize', 2, 'Color', [0,0.7,0])
+plot(k, Delta_k_wc_2*1e2,'x-','MarkerSize', 2, 'Color','Red')
+plot(k, Delta_k_wc_3*1e2, '^-', 'MarkerSize', 2, 'Color', [0,0.7,0])
 %xlim([0,1.5])
-ax = gca;
-ax.YAxis.Exponent = -2;
+ylim([-0.2,1])
+yticks([0,0.5,1])
+yline(0)
+%ax = gca;
+%ax.YAxis.Exponent = -2;
 
 axes(f(6))
-plot(temp_list, coeff_trans, '.','Color', 'Black')
+plot(temp_list, coeff_trans*1e2, '.','Color', 'Black')
 hold on
-plot(temp_list, coeff_wc_1,'o','Color', 'Blue')
-plot(temp_list, coeff_wc_2, 'x','Color','Red')
-plot(temp_list, coeff_wc_3, '^','Color',[0,0.7,0])
-plot(temp_list, input_fit(temp_list),'Color','Black')
+plot(temp_list, coeff_wc_1*1e2,'o','Color', 'Blue')
+plot(temp_list, coeff_wc_2*1e2, 'x','Color','Red')
+plot(temp_list, coeff_wc_3*1e2, '^','Color',[0,0.7,0])
+plot(temp_list, input_fit(temp_list)*1e2,'Color','Black')
 xlabel('$T_-\; (\rm nK)$','Interpreter', 'latex')
-ylabel('$\alpha_T$','Interpreter','latex')
-yticks([0,1,2]*1e-3)
+ylabel('$\alpha_{T_-}\; (\rm \mu m^{-1})$','Interpreter','latex')
+ax = gca;
+ax.YAxis.Exponent = -1;
 xlim([20,80])
 xticks([20,40,60,80])
 title('\textbf{f}','FontName','Times','Color','black','Units', 'normalized','Interpreter','latex', 'Position',[0.1,0.8])
